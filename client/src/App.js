@@ -1,23 +1,35 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import { User } from './context/User.js';
+import SignUp from './components/SignUp.js'
+import TypoMeter from './components/TypoMeter.js';
+
+
 
 function App() {
+  const [newUser, setNewUser] = React.useState({
+    email: "",
+    username: "dummy",
+    pwd: "",
+    name: "",
+    accessToken: "",
+  });
+
+  // Example: Update state with an effect (if needed)
+  React.useEffect(() => {
+    setNewUser((old) => ({
+      ...old,
+      name: "Updated Name", // Example modification
+    }));
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <User.Provider value={{ newUser, setNewUser }}>
+        {/* Add Router here if needed */}
+        {/* <TypoMeter /> */}
+        <SignUp/>
+      </User.Provider>
     </div>
   );
 }
