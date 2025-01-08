@@ -6,7 +6,7 @@ const TypoMeter = () => {
 
   return (
     <div>
-      <h2>Hi, I am a SpeedoMeter!</h2>
+      <h1>Hi, I am a TypeMeter!</h1>
     </div>
   );
 };

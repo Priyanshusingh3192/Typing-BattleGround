@@ -10,6 +10,7 @@ import {
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import './CSS/Bubbles.css'; // Import the bubble effect CSS
 
 function OtpPage() {
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -51,13 +52,30 @@ function OtpPage() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        position: "relative", // To position bubbles correctly
       }}
     >
-      <MDBCard style={{ maxWidth: "400px", width: "90%", borderRadius: "15px" }}>
+      <div className="bubbles">
+        {Array(50) // Increase the number of bubbles for more effect
+          .fill()
+          .map((_, i) => (
+            <div
+              className="bubble"
+              key={i}
+              style={{
+                left: `${Math.random() * 100}%`, // Random horizontal position
+                animationDuration: `${10 + Math.random() * 15}s`, // Random animation duration
+                animationDelay: `${Math.random() * 5}s`, // Random delay
+              }}
+            ></div>
+          ))}
+      </div>
+
+      <MDBCard style={{ maxWidth: "400px", width: "90%", borderRadius: "15px", zIndex: 1 }}>
         <MDBCardBody className="text-center">
           <h3 className="mb-4">Verify OTP</h3>
           <p className="text-muted mb-4">
-            Enter the 4-digit OTP sent to Email you Entered.
+            Enter the 4-digit OTP sent to the email you entered.
           </p>
 
           <MDBRow className="mb-3">

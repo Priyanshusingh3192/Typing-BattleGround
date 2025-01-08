@@ -3,13 +3,15 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TypoMeter from './TypoMeter';
 import SignUp from './SignUp';
 import Otp from './Otp';
+import Welcome from './Welcome';
 
 const Container = () => {
   return (
     <BrowserRouter>
       <div>
         <Routes>
-          <Route path="/" element={<TypoMeter />} />
+        <Route path="/" element={<Welcome />} />
+          <Route path="/typometer" element={<TypoMeter />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/otp" element={<Otp />} />
         </Routes>
