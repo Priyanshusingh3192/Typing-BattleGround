@@ -14,9 +14,11 @@ import {
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { User } from "../context/User";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 function App() {
   const { setNewUser } = useContext(User);
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   // State to manage form inputs
   const [formData, setFormData] = useState({
@@ -40,8 +42,15 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Perform validations
-    if (formData.password !== formData.confirmPassword) {
+    // Check if all fields are filled
+    const { name, email, password, confirmPassword } = formData;
+    if (!name || !email || !password || !confirmPassword) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
@@ -55,12 +64,12 @@ function App() {
       accessToken: 'dummy_token', // Add actual logic for token if needed
     });
 
-    alert('Registration Successful!');
-    console.log('Form Data:', formData);
+    // Navigate to OTP page
+    navigate('/otp');
   };
 
   return (
-    <MDBContainer fluid>
+    <MDBContainer fluid style={{ backgroundColor: '#f0f8ff', minHeight: '100vh', padding: '20px' }}>
       <MDBCard className="text-black m-5" style={{ borderRadius: '25px' }}>
         <MDBCardBody>
           <form onSubmit={handleSubmit}>
