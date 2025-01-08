@@ -1,9 +1,9 @@
 const express=require('express')
 const router=express()
-// const registerController=require('../controllers/registerController')
+const registerController=require('../controller/registerController')
 const otpController=require('../controller/otpController')
 
 router.post('/register',otpController)
 
-// router.post('/otp',registerController.handleNewUser)
+router.post('/otp',registerController.handleNewUser)
 module.exports=router
