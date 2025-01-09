@@ -13,7 +13,7 @@ const sendEmail = async (subjects, message, send_to, send_from, reply_to) => {
     },
   });
   const options = {
-    from: "collegeconnect121@gmail.com",
+    from: "priyanshusingh202000@gmail.com",
     to: send_to,
     replyTo: reply_to,
     subject: "One time password for TypingMaster is",

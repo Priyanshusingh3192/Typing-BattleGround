@@ -1,94 +1,77 @@
 const express = require('express');
-const router = express.Router()
-const users = require('../model/User')
+const router = express.Router();
+const users = require('../model/User');
 
-var validator = require("email-validator");
-
-const { passwordStrength } = require('check-password-strength')
-
-const sendEmail=require('./emailController')
-const bcrypt=require('bcryptjs')
-
-const otp=require("../model/otpSchema")
+const validator = require("email-validator");
+const { passwordStrength } = require('check-password-strength');
+const sendEmail = require('./emailController');
+const bcrypt = require('bcryptjs');
+const otp = require("../model/otpSchema");
 
 const handleOtp = async (req, res) => {
-    console.log(req.body);
-      const { name, email,pwd,username } = req.body
+    console.log("Request Body:", req.body);
+    const { name, email, pwd, username } = req.body;
 
-    var m=1;
-   const token=pwd;
-    console.log(name)
-    if(validator.validate(email)){
-        if(passwordStrength(token).value==='Strong'||passwordStrength(token).value==='Medium'){
+    if (!validator.validate(email)) {
+        return res.status(400).json({ message: "Invalid Email Address" });
+    }
+
+    if (passwordStrength(pwd).value !== 'Strong' && passwordStrength(pwd).value !== 'Medium') {
+        return res.status(400).json({ message: "Password is too weak. Use a stronger password." });
+    }
+
     try {
+        const existingUser = await users.findOne({ email });
+        const existingUsername = await users.findOne({ username });
 
-        const preuser = await users.findOne({ email: email })
-        const preuser1 = await users.findOne({ username: username })
-        console.log(preuser)
-        console.log("otp creation section")
-        if(preuser||preuser1){
-            res.status(404).send("This user already exists")
-            console.log("This user already exist")
+        if (existingUser || existingUsername) {
+            return res.status(409).json({ message: "User with this email or username already exists" });
         }
-        else{
-            // const adduser=new users({
-            //     name,email,pwd,username
-            // })
 
-console.log("otp creation section")
+        console.log("OTP generation section");
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(pwd, salt);
+        const otpValue = Math.floor(100000 + Math.random() * 900000);
+        const currentTime = new Date();
 
-const salt=await bcrypt.genSalt(10)
-const secPas=await bcrypt.hash(pwd,salt)
+        const existingOtp = await otp.findOne({ email });
 
-            const d=new Date()
-  // const {email}=req.body
-   otp5=Math.floor(100000 + Math.random() * 900000)
-    const otp1=new otp({
-        otp:otp5,email:email,time:d,name:name,pwd:secPas,username:username,
-    
-       })
-      
-   const otp2=await otp.find({email:email})
-   console.log(otp2)
-   if(otp2.length){
-    
-    const upd=await otp.updateOne({email:email},{$set:{
-        otp:otp5,email:email,time:d,name:name,pwd:secPas,username:username,
-    
-       }});
+        if (existingOtp) {
+            // Update existing OTP entry
+            await otp.updateOne(
+                { email },
+                {
+                    $set: {
+                        otp: otpValue,
+                        time: currentTime,
+                        name,
+                        pwd: hashedPassword,
+                        username,
+                    },
+                }
+            );
 
-    await sendEmail("",otp5,email,"",email,false)
-
-    res.sendStatus(201)
-    console.log("updated")
-   }else{
-    try {  
-           const k1= await otp1.save();
-           const k2= await sendEmail("",otp5,email,"",email)
-            console.log("success")
-            res.sendStatus(202)
-
-        }catch(error){
-            console.log(error)
-            res.sendStatus(404).send("Error otp creation")
+            await sendEmail("OTP", otpValue, email, "no-reply@yourapp.com", email);
+            console.log("status 201");
+            return res.status(201).json({ message: "OTP updated and sent successfully" });
         }
-    }
-           // await adduser.save();
-           // res.status(201).json(adduser)
-            console.log(adduser)
+        // Create a new OTP entry
+        const newOtp = new otp({
+            otp: otpValue,
+            email,
+            time: currentTime,
+            name,
+            pwd: hashedPassword,
+            username,
+        });
 
-        }
+        await newOtp.save();
+        await sendEmail("OTP", otpValue, email, "no-reply@yourapp.com", email);
+        return res.status(202).json({ message: "OTP created and sent successfully" });
     } catch (error) {
-        //res.status(404).send(error)
-        console.log(error)
-    }}else{
-        res.status(404).send("Weak Password")
+        console.error("Error in OTP handling:", error);
+        return res.status(500).json({ message: "An internal server error occurred" });
     }
+};
 
-}else{
-        res.status(404).send("Email Not valid")
-    }
-
-
-}
-module.exports=handleOtp
+module.exports = handleOtp;

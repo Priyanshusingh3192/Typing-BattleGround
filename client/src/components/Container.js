@@ -4,6 +4,7 @@ import TypoMeter from './TypoMeter';
 import SignUp from './SignUp';
 import Otp from './Otp';
 import Welcome from './Welcome';
+import Login from './Login';
 
 const Container = () => {
   return (
@@ -13,6 +14,7 @@ const Container = () => {
         <Route path="/" element={<Welcome />} />
           <Route path="/typometer" element={<TypoMeter />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/otp" element={<Otp />} />
         </Routes>
       </div>

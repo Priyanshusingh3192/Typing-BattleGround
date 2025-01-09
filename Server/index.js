@@ -6,6 +6,10 @@ const PORT = 8000;
 
 const mongoose = require("mongoose");
 const connectDB = require("./config/dbConn");
+const cors = require('cors');
+app.use(express.json());
+app.use(cors());  // Allow all origins (or configure specific origins)
+
 connectDB();
 let server;
 mongoose.connection.once("open", () => {

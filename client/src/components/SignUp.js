@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   MDBBtn,
   MDBContainer,
@@ -15,49 +15,67 @@ import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { User } from "../context/User";
 import { useNavigate } from 'react-router-dom';
+import { addClient } from "../API/api"; // Import the API function
 import './CSS/Bubbles.css'; // Import the CSS for bubbles
 
 function App() {
-  const { setNewUser } = useContext(User);
+  const { newUser, setNewUser } = useContext(User);  // Get both newUser and setNewUser from context
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    newsletter: false,
-  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    
+    setNewUser((prevUser) => ({
+      ...prevUser,
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { name, email, password, confirmPassword } = formData;
-    if (!name || !email || !password || !confirmPassword) {
+  const handleSubmit = async (e) => {
+    // alert("dfdfndfndf");
+     e.preventDefault();
+    console.log("Mai hu ",newUser)
+   
+    const { name, username, email, pwd, confirmPassword } = newUser;  // Access newUser directly
+
+    console.log("User data being submitted:", newUser);
+
+    if (!name || !username || !email || !pwd || !confirmPassword) {
       alert('Please fill in all required fields.');
       return;
     }
-    if (password !== confirmPassword) {
+    if (pwd !== confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
 
-    setNewUser({
-      email: formData.email,
-      username: formData.name,
-      pwd: formData.password,
-      name: formData.name,
-      accessToken: 'dummy_token',
-    });
-
-    navigate('/otp');
+    setLoading(true);
+    try {
+      const response = await addClient({
+        name, email,pwd,username,
+      });
+      console.log("bahar",response);
+      if (Number(response.status) === 201 || Number(response.status) === 202) {
+        console.log("OTP SENT: ", response.message);
+        setNewUser({
+          name: newUser.name,
+          username: newUser.username,
+          email: newUser.email,
+        });
+        navigate('/otp');
+      } else {
+        setError(response.message || 'Registration failed.');
+        // setError('Registration failed.');
+      }
+    } catch (err) {
+      console.error("Error during registration:", err);
+      setError('An error occurred during registration. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,7 +102,18 @@ function App() {
                       type="text"
                       className="w-100"
                       name="name"
-                      value={formData.name}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="d-flex flex-row align-items-center mb-4">
+                    <MDBIcon fas icon="user-tag me-3" size="lg" />
+                    <MDBInput
+                      label="Username"
+                      id="formUsername"
+                      type="text"
+                      className="w-100"
+                      name="username"
                       onChange={handleChange}
                     />
                   </div>
@@ -96,7 +125,6 @@ function App() {
                       id="form2"
                       type="email"
                       name="email"
-                      value={formData.email}
                       onChange={handleChange}
                     />
                   </div>
@@ -106,9 +134,8 @@ function App() {
                     <MDBInput
                       label="Password"
                       id="form3"
-                      type="password"
-                      name="password"
-                      value={formData.password}
+                      type="pwd"
+                      name="pwd"
                       onChange={handleChange}
                     />
                   </div>
@@ -116,11 +143,10 @@ function App() {
                   <div className="d-flex flex-row align-items-center mb-4">
                     <MDBIcon fas icon="key me-3" size="lg" />
                     <MDBInput
-                      label="Repeat your password"
+                      label="Confirm pwd"
                       id="form4"
-                      type="password"
+                      type="pwd"
                       name="confirmPassword"
-                      value={formData.confirmPassword}
                       onChange={handleChange}
                     />
                   </div>
@@ -128,17 +154,16 @@ function App() {
                   <div className="mb-4">
                     <MDBCheckbox
                       name="newsletter"
-                      value={formData.newsletter}
                       id="flexCheckDefault"
                       label="Subscribe to our newsletter"
-                      checked={formData.newsletter}
                       onChange={handleChange}
                     />
                   </div>
 
-                  <MDBBtn className="mb-4" size="lg" type="submit">
-                    Register
+                  <MDBBtn className="mb-4" size="lg" type="submit" disabled={loading}>
+                    {loading ? 'Registering...' : 'Register'}
                   </MDBBtn>
+                  {error && <p className="text-danger">{error}</p>}
                 </MDBCol>
 
                 <MDBCol md="10" lg="6" className="order-1 order-lg-2 d-flex align-items-center">
