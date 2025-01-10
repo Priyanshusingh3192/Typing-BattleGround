@@ -7,7 +7,7 @@ import {
   MDBInput,
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
-import "./CSS/TypingSpeedTest.css"; // CSS for bubbles and grass
+import "./CSS/TypingSpeedTest.css"; // CSS for bubbles, stars, and background
 
 function TypingSpeedTest() {
   const sampleTexts = [
@@ -28,11 +28,28 @@ function TypingSpeedTest() {
   const [startTime, setStartTime] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [wpm, setWpm] = useState(0);
+  const [starPositions, setStarPositions] = useState([]);
 
   useEffect(() => {
     setSampleText(
       sampleTexts[Math.floor(Math.random() * sampleTexts.length)]
     );
+  }, []);
+
+  useEffect(() => {
+    const savedStarPositions = localStorage.getItem("starPositions");
+    if (savedStarPositions) {
+      setStarPositions(JSON.parse(savedStarPositions));
+    } else {
+      const newStarPositions = Array.from({ length: 50 }).map(() => ({
+        top: `${Math.random() * 100}vh`,
+        left: `${Math.random() * 100}vw`,
+        animationDelay: `${Math.random() * 2}s`,
+        animationDuration: `${1.5 + Math.random() * 1.5}s`,
+      }));
+      setStarPositions(newStarPositions);
+      localStorage.setItem("starPositions", JSON.stringify(newStarPositions));
+    }
   }, []);
 
   const handleInputChange = (e) => {
@@ -82,12 +99,22 @@ function TypingSpeedTest() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        overflow: "hidden", // Prevent elements from scrolling
       }}
     >
-      {/* Static Bubbles */}
-      <div className="bubbles">
-        {Array.from({ length: 20 }).map((_, index) => (
-          <div key={index} className="bubble"></div>
+      {/* Twinkling Stars */}
+      <div className="stars">
+        {starPositions.map((star, index) => (
+          <div
+            key={index}
+            className="star"
+            style={{
+              top: star.top,
+              left: star.left,
+              animationDelay: star.animationDelay,
+              animationDuration: star.animationDuration,
+            }}
+          ></div>
         ))}
       </div>
 
@@ -99,8 +126,8 @@ function TypingSpeedTest() {
           padding: "30px",
           borderRadius: "15px",
           boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
-          background: "#fff3e0", // Uniform light creamy color
-          zIndex: 2,
+          background: "#ebebf0",
+          zIndex: 2, // Ensure card is above stars and bubbles
         }}
       >
         <MDBCardBody className="d-flex justify-content-between align-items-start">
@@ -117,7 +144,7 @@ function TypingSpeedTest() {
                 fontSize: "1.2rem",
                 fontWeight: "500",
                 padding: "15px",
-                backgroundColor: "#fff9e6", // Lighter creamy background
+                backgroundColor: "#fff9e6",
                 borderRadius: "10px",
                 marginBottom: "20px",
                 wordWrap: "break-word",
@@ -203,9 +230,6 @@ function TypingSpeedTest() {
           </div>
         </MDBCardBody>
       </MDBCard>
-
-      {/* Grass Section */}
-      <div className="grass"></div>
     </MDBContainer>
   );
 }

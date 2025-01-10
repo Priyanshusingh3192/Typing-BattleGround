@@ -10,7 +10,7 @@ import {
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import './CSS/Bubbles.css'; // Import the bubble effect CSS
+import './CSS/signup.css'; // CSS for twinkling stars
 import { User } from "../context/User";
 import { useNavigate } from 'react-router-dom';
 import { verifyOtp, addClient } from "../API/api"; // Import necessary API functions
@@ -79,31 +79,31 @@ function OtpPage() {
     <MDBContainer
       fluid
       style={{
-        backgroundColor: "#f0f8ff",
+        backgroundColor: "#000108",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        position: "relative", // To position bubbles correctly
+        position: "relative", // To position bubbles and stars correctly
       }}
     >
-      <div className="bubbles">
-        {Array(50) // Increase the number of bubbles for more effect
-          .fill()
-          .map((_, i) => (
-            <div
-              className="bubble"
-              key={i}
-              style={{
-                left: `${Math.random() * 100}%`, // Random horizontal position
-                animationDuration: `${10 + Math.random() * 15}s`, // Random animation duration
-                animationDelay: `${Math.random() * 5}s`, // Random delay
-              }}
-            ></div>
-          ))}
+      {/* Twinkling Stars */}
+      <div className="stars">
+        {Array.from({ length: 50 }).map((_, index) => (
+          <div
+            key={index}
+            className="star"
+            style={{
+              top: `${Math.random() * 100}vh`,
+              left: `${Math.random() * 100}vw`,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${1.5 + Math.random() * 1.5}s`,
+            }}
+          ></div>
+        ))}
       </div>
 
-      <MDBCard style={{ maxWidth: "400px", width: "90%", borderRadius: "15px", zIndex: 1 }}>
+      <MDBCard style={{ maxWidth: "400px", width: "90%", borderRadius: "15px", zIndex: 1, }}>
         <MDBCardBody className="text-center">
           <h3 className="mb-4">Verify OTP</h3>
           <p className="text-muted mb-4">
