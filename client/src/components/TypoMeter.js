@@ -7,6 +7,7 @@ import {
   MDBInput,
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
+import "./CSS/TypingSpeedTest.css"; // CSS for bubbles and grass
 
 function TypingSpeedTest() {
   const sampleTexts = [
@@ -29,7 +30,6 @@ function TypingSpeedTest() {
   const [wpm, setWpm] = useState(0);
 
   useEffect(() => {
-    // Generate a random text from the sampleTexts array on component load
     setSampleText(
       sampleTexts[Math.floor(Math.random() * sampleTexts.length)]
     );
@@ -38,19 +38,16 @@ function TypingSpeedTest() {
   const handleInputChange = (e) => {
     const input = e.target.value;
 
-    // Start timing on the first input
     if (!isTyping) {
       setStartTime(new Date());
       setIsTyping(true);
     }
 
-    // Only consider correctly typed characters
     const correctText = sampleText.substring(0, input.length);
     if (input === correctText) {
       setUserInput(input);
     }
 
-    // Stop typing if fully matched
     if (input === sampleText) {
       setIsTyping(false);
     }
@@ -68,7 +65,7 @@ function TypingSpeedTest() {
   const resetTest = () => {
     setSampleText(
       sampleTexts[Math.floor(Math.random() * sampleTexts.length)]
-    ); // Generate a new random text
+    );
     setUserInput("");
     setStartTime(null);
     setIsTyping(false);
@@ -78,13 +75,23 @@ function TypingSpeedTest() {
   return (
     <MDBContainer
       fluid
-      className="d-flex align-items-center justify-content-center"
+      className="typing-speed-container"
       style={{
-        background: "#f5f5f5", // Light background color
         height: "100vh",
         position: "relative",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
+      {/* Static Bubbles */}
+      <div className="bubbles">
+        {Array.from({ length: 20 }).map((_, index) => (
+          <div key={index} className="bubble"></div>
+        ))}
+      </div>
+
+      {/* Main Card */}
       <MDBCard
         style={{
           maxWidth: "900px",
@@ -92,7 +99,8 @@ function TypingSpeedTest() {
           padding: "30px",
           borderRadius: "15px",
           boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
-          background: "#ffffff",
+          background: "#fff3e0", // Uniform light creamy color
+          zIndex: 2,
         }}
       >
         <MDBCardBody className="d-flex justify-content-between align-items-start">
@@ -109,7 +117,7 @@ function TypingSpeedTest() {
                 fontSize: "1.2rem",
                 fontWeight: "500",
                 padding: "15px",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: "#fff9e6", // Lighter creamy background
                 borderRadius: "10px",
                 marginBottom: "20px",
                 wordWrap: "break-word",
@@ -151,7 +159,7 @@ function TypingSpeedTest() {
           <div
             style={{
               width: "35%",
-              backgroundColor: "#f8f9fa",
+              backgroundColor: "#fff9e6",
               padding: "30px",
               borderRadius: "15px",
               boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
@@ -175,7 +183,7 @@ function TypingSpeedTest() {
             <h2
               style={{
                 fontSize: "3rem",
-                color: "#1f7bff",
+                color: "#ff8c00",
                 fontWeight: "700",
                 marginBottom: "10px",
               }}
@@ -195,6 +203,9 @@ function TypingSpeedTest() {
           </div>
         </MDBCardBody>
       </MDBCard>
+
+      {/* Grass Section */}
+      <div className="grass"></div>
     </MDBContainer>
   );
 }
