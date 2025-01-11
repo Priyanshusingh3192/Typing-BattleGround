@@ -8,72 +8,73 @@ import {
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import "./CSS/signup.css"; // Assuming signup.css also contains common styles
+import "./CSS/signup.css";
+import { User } from "../context/User";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import {verifyUser} from '../API/api.js'
+
 
 function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { newUser, setNewUser } = useContext(User);
+  const [login, setLogin] = useState({ email: "", pwd: "" });
+  const { setAuth } = useAuth();
+  const navigate = useNavigate();
+  const axiosPrivate = useAxiosPrivate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [stars, setStars] = useState([]);
 
   useEffect(() => {
-    // Generate consistent star positions with a fixed seed
     const generateStars = () => {
       const randomWithSeed = (seed) => {
         const x = Math.sin(seed++) * 10000;
         return x - Math.floor(x);
       };
 
-      const positions = Array.from({ length: 50 }).map((_, index) => ({
+      return Array.from({ length: 50 }).map((_, index) => ({
         top: `${randomWithSeed(index) * 100}vh`,
         left: `${randomWithSeed(index + 50) * 100}vw`,
         animationDelay: `${randomWithSeed(index + 100) * 2}s`,
         animationDuration: `${1.5 + randomWithSeed(index + 150) * 1.5}s`,
       }));
-      return positions;
     };
 
     setStars(generateStars());
   }, []);
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
+    console.log("Hello ");
+    const res = await verifyUser(login);
 
-    if (!email || !password) {
-      setError("Please fill in both fields.");
-      return;
+    console.log(res)
+
+    //setStat(res.response.)
+    if (res?.response?.status === 401) {
+      console.log("cbxnbznvbnbv")
     }
 
-    setError("");
-    setLoading(true);
-
-    try {
-      const response = await fetch("http://localhost:8000/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const result = await response.json();
-
-      if (response.status === 200) {
-        console.log("Login successful:", result);
-        alert("Login successful!");
-      } else {
-        setError(result.message || "Invalid credentials. Please try again.");
-      }
-    } catch (err) {
-      console.error("Error during login:", err);
-      setError("An error occurred. Please try again later.");
-    } finally {
-      setLoading(false);
+    if (res.status == 200 || res.status == 201 || res.status == 202) {
+      console.log(res);
+      const accessToken = res?.data?.accessToken;
+      const roles = res?.data?.roles;
+      const tm = res?.data
+      setNewUser({ email: login.email, username: tm.username, pwd: login.pwd, name: login.name, accessToken});
+      console.log("i am cookie sent from server",res.cookie);
+    //   navigate('/typometer')
     }
-  };
+  }
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setLogin((prev) => ({ ...prev, [name]: value }));
+  }
 
   return (
     <div className="background-container">
-      {/* Fixed Twinkling Stars */}
       <div className="stars">
         {stars.map((star, index) => (
           <div
@@ -114,16 +115,18 @@ function LoginPage() {
               <MDBInput
                 label="Email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                value={login.email}
+                onChange={handleChange}
                 className="mb-4"
                 required
               />
               <MDBInput
                 label="Password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="pwd"
+                value={login.pwd}
+                onChange={handleChange}
                 className="mb-4"
                 required
               />

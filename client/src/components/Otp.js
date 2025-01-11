@@ -56,7 +56,7 @@ function OtpPage() {
 
       if (response.status === 200) {
         console.log("OTP verified successfully.");
-        navigate("/typometer"); // Redirect to sign-in page
+        navigate("/login"); // Redirect to sign-in page
       } else {
         console.error("OTP verification failed.");
         setError("OTP verification failed. Please try again.");

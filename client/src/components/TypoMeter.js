@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import {
   MDBContainer,
   MDBCard,
@@ -8,6 +8,7 @@ import {
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "./CSS/TypingSpeedTest.css"; // CSS for bubbles, stars, and background
+import { User } from "../context/User";
 
 function TypingSpeedTest() {
   const sampleTexts = [
@@ -69,6 +70,11 @@ function TypingSpeedTest() {
       setIsTyping(false);
     }
   };
+
+  const { newUser, setNewUser } = useContext(User);
+  useEffect(()=>{
+   console.log(newUser); 
+  },[])
 
   useEffect(() => {
     if (isTyping && userInput.length > 0) {
