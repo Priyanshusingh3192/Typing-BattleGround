@@ -6,18 +6,27 @@ import Otp from './Otp';
 import Welcome from './Welcome';
 import Login from './Login';
 import Persist from './Persist';
+import Home from './Home';
+import CreateRoom from './CreateRoom';
+import JoinRoom from './JoinRoom';
+import GamePage from './GamePage';
 
 const Container = () => {
   return (
     <BrowserRouter>
+    <Persist/>
       <div>
-      <Persist/>
         <Routes>
         <Route path="/" element={<Welcome />} />
           <Route path="/typometer" element={<TypoMeter />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/otp" element={<Otp />} />
+
+          <Route path="/home" element={<Home />} />
+          <Route path="/create-room" element={<CreateRoom />} />
+          <Route path="/join-room" element={<JoinRoom />} />
+          <Route path="/game-page" element={<GamePage />} />
         </Routes>
       </div>
     </BrowserRouter>

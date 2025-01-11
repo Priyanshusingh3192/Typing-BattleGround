@@ -72,9 +72,10 @@ function TypingSpeedTest() {
   };
 
   const { newUser, setNewUser } = useContext(User);
-  useEffect(()=>{
+
+//   useEffect(()=>{
    console.log(newUser); 
-  },[])
+//   },[]);
 
   useEffect(() => {
     if (isTyping && userInput.length > 0) {

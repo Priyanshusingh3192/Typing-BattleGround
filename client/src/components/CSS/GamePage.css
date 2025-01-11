@@ -1,0 +1,220 @@
+/* Background styling for the game page */
+.game-page-container {
+    background-color: #000;
+    color: #fff;
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Static stars with blinking effect */
+  .star {
+    position: absolute;
+    font-size: 18px;
+    color: #fff;
+    animation: blink 2s infinite ease-in-out;
+    opacity: 0.8;
+  }
+  
+  /* Different sizes and delays for a natural effect */
+  .star:nth-child(odd) {
+    font-size: 14px;
+    animation-delay: 1s;
+  }
+  .star:nth-child(even) {
+    font-size: 20px;
+    animation-delay: 0.5s;
+  }
+  
+  /* Blinking animation */
+  @keyframes blink {
+    0%, 100% {
+      opacity: 0.2;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  
+  /* Card styling for the game */
+  .game-card {
+    background-color: rgba(9, 2, 2, 0.8);
+    border: 10px solid #8de139;
+    border-radius: 15px;
+    z-index: 2;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    text-align: center;
+    width: 950px;
+  }
+  
+  /* Title styling */
+  .game-title {
+    font-family: "Courier New", Courier, monospace;
+    color: #ffdd00;
+    text-shadow: 0 0 10px #ffdd00;
+  }
+  
+  /* Typing target text */
+  .target-text {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: #fff;
+    font-family: "Courier New", Courier, monospace;
+  }
+  
+  /* Text area styling */
+/* Styling the typing box */
+.main-game-page {
+  background-color: #fffdd0; /* Creamy color */
+  border: 5px solid #472a13;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #333;
+  padding: 10px;
+}
+
+
+  /* Speed display styling */
+  .speed-display span {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  /* Button styling */
+  .MDBBtn {
+    font-family: "Courier New", Courier, monospace;
+    background-color: #008080;
+    color: #fff;
+    border: 1px solid #006666;
+  }
+  .target-text {
+    background-color: #fffdd0; /* Creamy color */
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .MDBBtn:hover {
+    background-color: #00cccc;
+    color: #000;
+  }
+  .game-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+ /* Align circles and the typing box */
+.circle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  
+  /* Circle styling */
+  .circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-family: "Courier New", Courier, monospace;
+    position: relative;
+    animation: fade-in 1.5s ease-in-out;
+  }
+  
+  .circle-text {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .circle span {
+    font-weight: bold;
+    font-size: 20px;
+    color: #ffdd00;
+  }
+  
+  /* Individual circle colors */
+  .timer-circle {
+    border-color: #00cccc;
+  }
+  
+  .speed-circle {
+    border-color: #ffdd00;
+  }
+  
+  .opponent-speed-circle {
+    border-color: #ff4444;
+  }
+  
+  /* Typing box container */
+  .typing-box-container {
+    flex-grow: 1;
+    text-align: center;
+    max-width: 400px;
+  }
+  
+  .result-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    background-color: rgba(19, 3, 3, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+  }
+  
+  .pop-up-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(234, 198, 198, 0.9); /* semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    display: none; /* initially hidden */
+  }
+  
+  .pop-up-container.show {
+    display: block; /* show the pop-up when the state is true */
+  }
+  
+  .pop-up-text {
+    color: black; /* Black color for the text */
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  
+  /* Animation */
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  

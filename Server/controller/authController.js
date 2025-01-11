@@ -50,13 +50,11 @@ const handleLogin = async (req, res) => {
         //console.log(result);
 
         // Creates Secure Cookie with refresh token
-        
-             res.cookie('jwt', refreshToken, {
-                httpOnly: true, 
-                secure: false,  // set to true in production when using HTTPS
-                sameSite: 'None', // add this if the client and server are on different domains
-                maxAge: 24 * 60 * 60 * 1000 // 1 day
-            });
+
+        res.cookie('jwt', refreshToken, { httpOnly: true, 
+            // secure: true, 
+            // sameSite: 'None',
+              maxAge: 24 * 60 * 60 * 1000 });
             
         // Send authorization roles and access token to user
         res.json({ 

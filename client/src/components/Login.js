@@ -13,7 +13,6 @@ import { User } from "../context/User";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import {verifyUser} from '../API/api.js'
 
 
@@ -22,7 +21,6 @@ function LoginPage() {
   const [login, setLogin] = useState({ email: "", pwd: "" });
   const { setAuth } = useAuth();
   const navigate = useNavigate();
-  const axiosPrivate = useAxiosPrivate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [stars, setStars] = useState([]);
@@ -63,7 +61,8 @@ function LoginPage() {
       const roles = res?.data?.roles;
       const tm = res?.data
       setNewUser({ email: login.email, username: tm.username, pwd: login.pwd, name: login.name, accessToken});
-      console.log("i am cookie sent from server",res.cookie);
+      console.log("i am cookie sent from server",res.cookies);
+      console.log("i am data sent from server",res);
     //   navigate('/typometer')
     }
   }

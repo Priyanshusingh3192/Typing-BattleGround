@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 
 const PORT = 8000;
-
+const cookieParser = require("cookie-parser");
 const corsOption = require("./config/corsOptions");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -16,6 +16,7 @@ mongoose.connection.once("open", () => {
 
 app.use(cors(corsOption));
 app.use(express.json());
+app.use(cookieParser());
 // Define routes
 
 app.use("/user", require("./routes/user"));

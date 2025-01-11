@@ -6,7 +6,7 @@ import React from 'react';
 axios.defaults.withCredentials = true;
 const useRefreshToken = () => {
     const { setAuth } = useAuth();
-    const {newUser,setNewUser}=React.useContext(User)
+    const {newUser,setNewUser}=React.useContext(User);
     //setAuth({"email":"nxcmx"})
 
     const refresh = async () => {
