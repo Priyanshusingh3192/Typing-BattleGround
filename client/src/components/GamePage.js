@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import {
@@ -13,6 +13,7 @@ import {
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "./CSS/GamePage.css";
+import { User } from "../context/User";
 
 const socket = io("http://localhost:8000");
 
@@ -28,20 +29,27 @@ function GamePage() {
     const [winner, setWinner] = useState(""); // Track winner
     const startTime = useRef(null);
 
+    const { newUser } = useContext(User);
+
     // Predefined content to type
     const targetText = "The quick brown fox jumps over the lazy dog";
 
     useEffect(() => {
         const handleTypingUpdate = (data) => {
-            if (data.room === roomCode) {
-                setOpponentSpeed(data.speed);
+            console.log("YUP Speed Update");
+            console.log(data.opponentEmail, " " , newUser.email, " ", data.opponentSpeed);
+            if (data.room === roomCode && data.opponentEmail === newUser.email) {
+                console.log("YUP Speed Update IN");
+                setOpponentSpeed(data.opponentSpeed);
             }
         };
 
         const handleStartGame = (data) => {
-            if (data.room === roomCode) {
+            console.log("Aaya Mai Sir out");
+            if (data.email === newUser.email) {
                 setIsStarted(true);
                 startTime.current = Date.now();
+                console.log("Aaya Mai Sir");
             }
         };
 
@@ -80,20 +88,20 @@ function GamePage() {
         const calculatedSpeed = Math.floor(matchCount / elapsedTime); // WPM
         setSpeed(calculatedSpeed);
 
-        socket.emit("typing-update", { room: roomCode, speed: calculatedSpeed });
+        socket.emit("typing-update", { room: roomCode, email: newUser.email ,speed: calculatedSpeed });
     };
 
     const handleStart = () => {
         setIsStarted(true);
         startTime.current = Date.now();
-        socket.emit("start-game", { room: roomCode });
+        socket.emit("start-game", { room: roomCode, email: newUser.email });
     };
 
     useEffect(() => {
         if (isStarted && timer > 0) {
             const interval = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - startTime.current) / 1000);
-                setTimer(Math.max(0, 5 - elapsed));
+                setTimer(Math.max(0, 60 - elapsed));  // Decrement timer from 60 to 0
             }, 1000);
 
             return () => clearInterval(interval);
@@ -105,7 +113,7 @@ function GamePage() {
             setWinner(winner);
             setShowResult(true);
 
-            // Hide result pop-up after 5 seconds
+            // Hide result pop-up after 10 seconds
             setTimeout(() => {
                 setShowResult(false);
             }, 10000);
@@ -156,12 +164,6 @@ function GamePage() {
                     </MDBBtn>
 
                     <div className="circle-container">
-                        {/* <div className="circle timer-circle">
-                            <p className="circle-text">
-                                Timer <br />
-                                <span>{timer}s</span>
-                            </p>
-                        </div> */}
                         <div className="typing-box-container">
                             <MDBTypography tag="h5" className="mb-3 text-muted">
                                 Type the following text:
@@ -189,81 +191,75 @@ function GamePage() {
                             </MDBProgress>
                         </div>
 
+                        {/* Timer Box */}
+                        <div style={{
+                            width: '200px',
+                            height: '200px',
+                            backgroundColor: '#f5f5dc', // Creamy color
+                            color: 'black',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '50%', // Making it a circle
+                            border: '10px solid #023330', // Black border
+                            marginBottom: '20px',
+                            textAlign: 'center',
+                            fontSize: '18px',
+                            margin: '0 auto' // Center align the timer box horizontally
+                        }}>
+                            <p>
+                                Timer <br />
+                                <span style={{ fontWeight: 'bold', fontSize: '22px' }}>{timer}s</span>
+                            </p>
+                        </div>
 
-
-                        <div>
-                            {/* Timer Box */}
+                        {/* Speed Boxes */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center', // Center align the boxes horizontally
+                            width: '100%',
+                            gap: '20px', // Space between the boxes
+                        }}>
                             <div style={{
-                                width: '200px',
-                                height: '200px',
-                                backgroundColor: '#f5f5dc', // Creamy color
+                                width: '150px',
+                                height: '150px',
+                                backgroundColor: '#f5f4ab', // Creamy color
                                 color: 'black',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                borderRadius: '50%', // Making it a circle
+                                borderRadius: '20px',
                                 border: '10px solid #023330', // Black border
-                                marginBottom: '20px',
-                                textAlign: 'center',
                                 fontSize: '18px',
-                                margin: '0 auto' // Center align the timer box horizontally
+                                textAlign: 'center'
                             }}>
                                 <p>
-                                    Timer <br />
-                                    <span style={{ fontWeight: 'bold', fontSize: '22px' }}>{timer}s</span>
+                                    Your Speed <br />
+                                    <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{speed} WPM</span>
                                 </p>
                             </div>
 
-                            {/* Speed Boxes */}
                             <div style={{
+                                width: '150px',
+                                height: '150px',
+                                backgroundColor: '#f5f4ab', // Creamy color
+                                color: 'black',
                                 display: 'flex',
-                                justifyContent: 'center', // Center align the boxes horizontally
-                                width: '100%',
-                                gap: '20px', // Space between the boxes
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '20px',
+                                border: '10px solid #023330', // Black border
+                                fontSize: '18px',
+                                textAlign: 'center'
                             }}>
-                                <div style={{
-                                    width: '150px',
-                                    height: '150px',
-                                    backgroundColor: '#f5f4ab', // Creamy color
-                                    color: 'black',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: '20px',
-                                    border: '10px solid #023330', // Black border
-                                    fontSize: '18px',
-                                    textAlign: 'center'
-                                }}>
-                                    <p>
-                                        Your Speed <br />
-                                        <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{speed} WPM</span>
-                                    </p>
-                                </div>
-
-                                <div style={{
-                                    width: '150px',
-                                    height: '150px',
-                                    backgroundColor: '#f5f4ab', // Creamy color
-                                    color: 'black',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: '20px',
-                                    border: '10px solid #023330', // Black border
-                                    fontSize: '18px',
-                                    textAlign: 'center'
-                                }}>
-                                    <p>
-                                        Opponent <br />
-                                        <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{opponentSpeed} WPM</span>
-                                    </p>
-                                </div>
+                                <p>
+                                    Opponent <br />
+                                    <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{opponentSpeed} WPM</span>
+                                </p>
                             </div>
                         </div>
-
-
-
                     </div>
+
                     <MDBTypography tag="p" className="mb-2 speed-display">
                         Matched Words: <span className="text-success">{matchedWords}</span>
                     </MDBTypography>

@@ -1,22 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { MDBContainer, MDBInput, MDBBtn, MDBCard, MDBCardBody, MDBTypography } from "mdb-react-ui-kit";
-
+import { User } from "../context/User";
 const socket = io("http://localhost:8000");
 
 function JoinRoom() {
   const [roomCode, setRoomCode] = useState("");
   const navigate = useNavigate();
-
+  const { newUser } = useContext(User);
   const handleJoinRoom = () => {
-    socket.emit("join-room", roomCode, (response) => {
-      if (response.status === "ok") {
-        navigate(`/room/${roomCode}`);
-      } else {
-        alert("Invalid Room Code!");
-      }
-    });
+    if (roomCode.trim() !== "") {
+      socket.emit(
+        "join-room",
+        { roomCode, email: newUser.email },
+        (response) => {
+          if (response.status === "ok") {
+            navigate(`/room/${roomCode}`);
+          } else {
+            alert(response.message || "Failed to join the room.");
+          }
+        }
+      );
+    } else {
+      alert("Please enter a room code.");
+    }
   };
 
   return (
