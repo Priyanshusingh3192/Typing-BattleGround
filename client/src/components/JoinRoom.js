@@ -13,9 +13,10 @@ function JoinRoom() {
     if (roomCode.trim() !== "") {
       socket.emit(
         "join-room",
-        { roomCode, email: newUser.email },
+        { roomCode, email: newUser.email,username:newUser.username},
         (response) => {
           if (response.status === "ok") {
+            console.log("yyy");
             navigate(`/room/${roomCode}`);
           } else {
             alert(response.message || "Failed to join the room.");

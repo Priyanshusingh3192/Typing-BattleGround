@@ -10,6 +10,7 @@ import Home from './Home';
 import CreateRoom from './CreateRoom';
 import JoinRoom from './JoinRoom';
 import GamePage from './GamePage';
+import NGamePage from './NGamePage';
 
 const Container = () => {
   return (
@@ -26,7 +27,8 @@ const Container = () => {
           <Route path="/create-room" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
           {/* Use a dynamic route parameter for room codes */}
-          <Route path="/room/:roomCode" element={<GamePage />} />
+          <Route path="/TWOroom/:roomCode" element={<GamePage />} />
+          <Route path="/room/:roomCode" element={<NGamePage />} />
         </Routes>
       </div>
     </BrowserRouter>
