@@ -63,7 +63,7 @@ function LoginPage() {
       setNewUser({ email: login.email, username: tm.username, pwd: login.pwd, name: login.name, accessToken});
       console.log("i am cookie sent from server",res.cookies);
       console.log("i am data sent from server",res);
-    //   navigate('/typometer')
+      navigate('/welcome');
     }
   }
 

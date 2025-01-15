@@ -14,7 +14,7 @@ function CreateRoom() {
   const handleCreateRoom = () => {
     const code = Math.random().toString(36).substr(2, 6).toUpperCase();
     setRoomCode(code);
-    socket.emit("create-room", { roomCode: code, email: newUser.email,username:newUser.username });
+    socket.emit("create-room", { roomCode: code, email: newUser.email,name:newUser.username });
     navigate(`/room/${code}`);
   };
 

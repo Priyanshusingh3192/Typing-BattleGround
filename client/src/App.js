@@ -5,6 +5,7 @@ import SignUp from './components/SignUp.js'
 import TypoMeter from './components/TypoMeter.js';
 import Otp from './components/Otp.js'
 import Container from './components/Container.js';
+import './index.css';  // or wherever your CSS file is located
 
 
 
