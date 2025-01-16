@@ -1,6 +1,8 @@
 module.exports = (io) => {
   const roomUsers = []; // Array to store room and user email mapping
   const roomSpeeds = []; 
+  let OnlineRooms = {};
+
   io.on("connection", (socket) => {
     console.log(`A user connected: ${socket.id}`);
 
@@ -14,7 +16,7 @@ module.exports = (io) => {
     // // Handle joining a room
     // socket.on("join-room", (data, callback) => {
     //   const { roomCode, email } = data;
-    //   const room = io.sockets.adapter.rooms.get(roomCode);
+    //   const room = io.sockets.adapOnlineRooms.get(roomCode);
     //   if (room && room.size < 2) {
     //     socket.join(roomCode);
     //     roomUsers.push({ roomCode, email, socketId: socket.id });
@@ -138,11 +140,6 @@ module.exports = (io) => {
   
 
 
-
-
-
-
-
     // Handle starting the game with email
     socket.on("start-game", (data) => {
       const { room, startTime, email } = data; // Capture the email of the user starting the game
@@ -169,5 +166,71 @@ module.exports = (io) => {
       }
       console.log(`User disconnected: ${socket.id}`);
     });
+
+
+
+
+
+    // Random Online play Logic 
+
+    socket.on('play-random', (data) => {
+      // Find the first room with space available (less than 4 players)
+      console.log("i am from play-random ", data);
+      const {_, userEmail} = data;
+      let roomId = null;
+      for (let room in OnlineRooms) {
+          if (OnlineRooms[room].users.length < 2) {
+              roomId = room;
+              break;
+          }
+      }
+
+      // If no room has space, create a new room
+      if (!roomId) {
+          roomId = `room${Object.keys(OnlineRooms).length + 1}`;  // Create a new room with a unique ID
+          OnlineRooms[roomId] = { users: [], gameStarted: false };
+      }
+
+      // Add the user to the room
+      OnlineRooms[roomId].users.push(userEmail);
+      socket.join(roomId);
+      console.log(`${userEmail} joined room: ${roomId}`);
+
+      // Notify all users in the room about the new player
+      io.to(roomId).emit('userJoined', { userEmail: userEmail, users: OnlineRooms[roomId].users });
+      
+      console.log("Room Length: ",OnlineRooms[roomId].users.length, "Total Rooms :",OnlineRooms);
+      // If the room reaches 2 players, start the game
+      if (OnlineRooms[roomId].users.length === 2 && !OnlineRooms[roomId].gameStarted) {
+          io.to(roomId).emit('startGame');
+          OnlineRooms[roomId].gameStarted = true;
+      }
+      // If there are less than 2 users, notify the room that they are waiting
+      if (OnlineRooms[roomId].users.length < 2) {
+          io.to(roomId).emit('waitingForPlayers', { users: OnlineRooms[roomId].users });
+      }
+
+  });
+
+  socket.on('wpmUpdate', (data) => {
+    const {userEmail, _, wpm } = data;
+    
+    let roomId = null;
+    for (const room in OnlineRooms) {
+        if (OnlineRooms[room].users.includes(userEmail)) {
+            roomId = room;
+            break;
+        }
+    }
+
+    if (roomId) {
+        console.log(`Updating WPM for user ${userEmail} in room ${roomId}: ${wpm}`);
+        io.to(roomId).emit('receiveWpm', { userEmail, opp_wpm: wpm });
+    } else {
+        console.error(`Room not found for user ${userEmail}`);
+    }
+
+  });
+
   });
 };

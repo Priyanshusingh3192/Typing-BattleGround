@@ -10,8 +10,8 @@ const handleNewUser=async(req,res)=>{
 
 try{
     const tm= await users.find({email:email});
-console.log(tm);
-console.log("hbn")
+// console.log(tm);
+// console.log("hbn")
 if(tm.length){
     res.status(401).send("User already exists");
 }
@@ -20,15 +20,15 @@ if(tm.length){
 }
     try{
     const otp3=await otp.find({otp:otp5,email:email})
-    console.log("hi")
-    console.log(otp3.name)
+    // console.log("hi")
+    // console.log(otp3.name)
    
    
     if(otp3.length>0){
     const interval=((new Date())-otp3[0].time)/60000
-    console.log(interval)
+    // console.log(interval)
     if(interval>10){
-        console.log("Otp expired")
+        // console.log("Otp expired")
         res.status(401).send("otp expired")
     }
     else{
@@ -47,7 +47,8 @@ if(tm.length){
         res.status(404).send("wrong otp")
     }
 
-    console.log(otp3)}
+    // console.log(otp3)
+   }
     catch(error){
         console.log(error)
     }

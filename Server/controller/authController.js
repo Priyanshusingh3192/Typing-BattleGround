@@ -3,14 +3,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const handleLogin = async (req, res) => {
-    console.log("HI ", req.body);
-    console.log("ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
-    console.log("REFRESH_TOKEN_SECRET:", process.env.REFRESH_TOKEN_SECRET);
+    // console.log("HI ", req.body);
+    // console.log("ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
+    // console.log("REFRESH_TOKEN_SECRET:", process.env.REFRESH_TOKEN_SECRET);
 
     const { email, pwd } = req.body;
     user=email;
     if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' });
-    console.log(user)
+    // console.log(user)
     const foundUser = await User.findOne({ email: user }).exec();
     if (!foundUser) return res.sendStatus(401); //Unauthorized 
     // evaluate password 
@@ -37,7 +37,7 @@ const handleLogin = async (req, res) => {
         // Saving refreshToken with current user
         
         foundUser.refreshToken = refreshToken;
-        console.log(foundUser)
+        // console.log(foundUser)
         try {
             const result = await foundUser.save();
             console.log("User saved successfully:", result);
@@ -46,7 +46,7 @@ const handleLogin = async (req, res) => {
         }
 
         
-        console.log("njj")
+        // console.log("njj")
         //console.log(result);
 
         // Creates Secure Cookie with refresh token

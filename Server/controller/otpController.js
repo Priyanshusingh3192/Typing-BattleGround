@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const otp = require("../model/otpSchema");
 
 const handleOtp = async (req, res) => {
-    console.log("Request Body:", req.body);
+    // console.log("Request Body:", req.body);
     const { name, email, pwd, username } = req.body;
 
     if (!validator.validate(email)) {

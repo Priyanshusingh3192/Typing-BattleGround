@@ -67,11 +67,11 @@ export default function NavbarForDropdownWithMultipleLanguages() {
                             Welcome
                         </a>
                     </li>
-                    <li className="w-40 h-12 flex justify-center items-center text-black font-medium bg-gradient-to-r from-teal-500 to-cyan-500 hover:bg-teal-600 rounded-lg shadow-lg transition-all duration-200">
+                    {/* <li className="w-40 h-12 flex justify-center items-center text-black font-medium bg-gradient-to-r from-teal-500 to-cyan-500 hover:bg-teal-600 rounded-lg shadow-lg transition-all duration-200">
                         <a href="play-random" className="flex items-center text-black">
                             Play Online
                         </a>
-                    </li>
+                    </li> */}
                 </ul>
             )}
         </>
