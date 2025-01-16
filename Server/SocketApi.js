@@ -219,7 +219,6 @@ module.exports = (io) => {
     for (const room in OnlineRooms) {
         if (OnlineRooms[room].users.includes(userEmail)) {
             roomId = room;
-            break;
         }
     }
 
