@@ -11,7 +11,7 @@ import {
     MDBInput,
     MDBSpinner,
 } from 'mdb-react-ui-kit';
-import { User } from "../context/User";
+import { User } from '../context/User';
 
 const newSocket = io('http://localhost:8000');
 
@@ -19,30 +19,29 @@ const PlayRandomOne = () => {
     const [roomId, setRoomId] = useState('room1');
     const [isGameStarted, setIsGameStarted] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [timeLeft, setTimeLeft] = useState(60); // 1-minute timer
-    const [typingText, setTypingText] = useState(
-        'The quick brown fox jumps over the lazy dog.'
-    );
+    const [timeLeft, setTimeLeft] = useState(60);
+    const [typingText, setTypingText] = useState('The quick brown fox jumps over the lazy dog. I added a dashed line effect to mimic road lane dividers. The line is styled to repeat with small gaps, giving it a dashed look.');
     const [userInput, setUserInput] = useState('');
     const [wordsTyped, setWordsTyped] = useState(0);
     const [wpm, setWpm] = useState(0);
-    const [opponentWpm, setOpponentWpm] = useState(0); // Store opponent WPMs as an array
-    const [usersInRoom, setUsersInRoom] = useState([]); // Track users in the room
-
+    const [opponentWpm, setOpponentWpm] = useState(0);
+    const [usersInRoom, setUsersInRoom] = useState([]);
     const timerRef = useRef(null);
     const { newUser } = useContext(User);
 
+    const [car1Position, setCar1Position] = useState(0);
+    const [car2Position, setCar2Position] = useState(0);
+
     useEffect(() => {
         if (!newUser || !newUser.email) {
-            console.error("User data is not available yet.");
+            console.error('User data is not available yet.');
             return;
         }
         const newEmail = newUser.email;
         newSocket.emit('play-random', { roomId, userEmail: newEmail });
 
-
         newSocket.on('userJoined', (data) => {
-            setUsersInRoom(data.users); // Update users in the room
+            setUsersInRoom(data.users);
         });
 
         newSocket.on('startGame', () => {
@@ -81,7 +80,7 @@ const PlayRandomOne = () => {
     };
 
     const calculateFinalWpm = () => {
-        const finalWpm = Math.round((wordsTyped / 60) * 60); // WPM calculation
+        const finalWpm = Math.round((wordsTyped / 60) * 60);
         setWpm(finalWpm);
         newSocket.emit('wpmUpdate', { userEmail: newUser.email, roomId, wpm: finalWpm });
     };
@@ -109,119 +108,159 @@ const PlayRandomOne = () => {
         }
     };
 
-
-
-
-
-    const [car1Position, setCar1Position] = useState(0);
-    const [car2Position, setCar2Position] = useState(0);
-
     useEffect(() => {
-        const car1Progress = Math.min((wpm / 100) * 100, 100); // User's car position
-        const car2Progress = Math.min((opponentWpm / 100) * 100, 100); // Opponent's car position
+        const car1Progress = Math.min((wpm / 100) * 100, 100);
+        const car2Progress = Math.min((opponentWpm / 100) * 100, 100);
         setCar1Position(car1Progress);
         setCar2Position(car2Progress);
     }, [wpm, opponentWpm]);
 
-
     return (
-        <MDBContainer style={{ paddingTop: '80px', maxWidth: '900px' }}>
-        <style>
-            {`
-                .race-track {
-                    position: relative;
-                    width: 100%;
-                    height: 200px;
-                    background: #444;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    margin: 20px 0;
-                }
-                .track {
-                    position: absolute;
-                    top: 50%;
-                    left: 0;
-                    width: 100%;
-                    height: 4px;
-                    background: #eee;
-                    transform: translateY(-50%);
-                }
-                .car {
-                    position: absolute;
-                    width: 50px;
-                    height: 30px;
-                    background: red;
-                    border-radius: 5px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-weight: bold;
-                    text-shadow: 1px 1px black;
-                    transition: left 0.5s ease-in-out;
-                }
-                .car.player2 {
-                    background: blue;
-                }
-            `}
-        </style>
-        <MDBRow className="justify-content-center">
-            <MDBCol md="12">
-                {loading ? (
-                    <div className="text-center">
-                        <MDBSpinner grow size="lg" />
-                        <p>Waiting for Players to Join...</p>
-                    </div>
-                ) : (
-                    <MDBCard>
-                        <MDBCardBody>
-                            <MDBCardTitle tag="h5" className="text-center">
-                                Typing Race Game
-                            </MDBCardTitle>
-                            {isGameStarted ? (
-                                <>
-                                    <MDBCardText className="text-center">
-                                        <strong>Time Left:</strong> {timeLeft} seconds
-                                    </MDBCardText>
-                                    <MDBCardText>
-                                        <strong>Type the following text:</strong> <br />
-                                        <p><strong>{typingText}</strong></p>
-                                    </MDBCardText>
-                                    <MDBInput
-                                        type="text"
-                                        value={userInput}
-                                        onChange={handleTyping}
-                                        placeholder="Start typing..."
-                                        disabled={timeLeft === 0}
-                                        className="mb-3"
-                                    />
-                                    <div className="race-track">
-                                        <div className="track" />
+        <MDBContainer
+            fluid
+            style={{
+                height: '100vh',
+                background: 'black',
+                color: 'white',
+                position: 'relative',
+                overflow: 'hidden',
+            }}
+        >
+            <MDBRow className="justify-content-center align-items-center" style={{ zIndex: 2, height: '100%' }}>
+                <MDBCol md="8">
+                    {loading ? (
+                        <div className="text-center" style={{ fontWeight: 'bold', fontSize: '24px' }}>
+                            <MDBSpinner grow size="lg" color="white" />
+                            <p>Waiting for Players to Join...</p>
+                        </div>
+                    ) : (
+                        <MDBCard style={{ backgroundColor: 'white', color: 'black' }}>
+                            <MDBCardBody>
+                                <MDBCardTitle tag="h5" className="text-center bg-orange-50 border-4	border-2 border-stone-100	">
+                                    Typing Race Game
+                                </MDBCardTitle>
+                                {isGameStarted ? (
+                                    <>
+                                        <MDBCardText className="text-center bg-orange-50 border-4 border-2 border-stone-100">
+                                            <strong>Time Left:</strong> {timeLeft} seconds
+                                        </MDBCardText>
+                                        <MDBCardText className="bg-orange-50 border-4 border-2 border-stone-100" >
+                                            <strong>Type the following text:</strong> <br />
+                                            <p>
+                                                <strong>{typingText}</strong>
+                                            </p>
+                                        </MDBCardText>
+                                        <MDBInput
+                                            type="text"
+                                            value={userInput}
+                                            onChange={handleTyping}
+                                            placeholder="Start typing..."
+                                            disabled={timeLeft === 0}
+                                            className="mb-3"
+                                            style={{
+                                                background: '#f0f0f0',
+                                                color: 'black',
+                                            }}
+                                        />
+                                        {/* Race Track */}
                                         <div
-                                            className="car"
-                                            style={{ left: `${car1Position}%`, top: '20%' }}
+                                            style={{
+                                                position: 'relative',
+                                                width: '100%',
+                                                height: '200px',
+                                                backgroundColor: '#3d3d3d', // Dark road color
+                                                borderRadius: '5px',
+                                                marginBottom: '20px',
+                                            }}
                                         >
-                                            🚗
+                                            {/* Lane Dividers (Dashed lines for road lanes) */}
+                                            <div
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '50%',
+                                                    left: '0',
+                                                    width: '100%',
+                                                    height: '2px',
+                                                    backgroundColor: 'white',
+                                                    backgroundSize: '10px 2px', // Making dashed line effect
+                                                    backgroundRepeat: 'repeat',
+                                                }}
+                                            />
+
+                                            {/* WPM Indicators */}
+                                            <div
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '10%',
+                                                    right: '5%',
+                                                    fontSize: '14px',
+                                                    fontWeight: 'bold',
+                                                    color: 'white',
+                                                    textAlign: 'right',
+                                                }}
+                                            >
+                                                {wpm} WPM (YOU)
+                                            </div>
+                                            <div
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '60%',
+                                                    right: '5%',
+                                                    fontSize: '14px',
+                                                    fontWeight: 'bold',
+                                                    color: 'white',
+                                                    textAlign: 'right',
+                                                }}
+                                            >
+                                                {opponentWpm} WPM (GUEST)
+                                            </div>
+
+                                            {/* Car 1 in Lane 1 */}
+                                            <div
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '10%', // Positioning car above the lane line
+                                                    left: `${car1Position}%`,
+                                                    transition: 'left 0.5s',
+                                                    textAlign: 'center',
+                                                    transform: 'scale(1.5)',
+                                                    color: '#FF0000', // Red color for Car 1
+                                                }}
+                                            >
+                                                <div style={{ fontSize: '50px' }}>⛟</div>
+                                            </div>
+
+                                            {/* Car 2 in Lane 2 */}
+                                            <div
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '60%', // Positioning car above the lane line
+                                                    left: `${car2Position}%`,
+                                                    transition: 'left 0.5s',
+                                                    textAlign: 'center',
+                                                    transform: 'scale(1.5)',
+                                                    color: '#FF0000', // Red color for Car 2
+                                                }}
+                                            >
+                                                <div style={{ fontSize: '60px' }}>🏎</div>
+                                            </div>
                                         </div>
-                                        <div
-                                            className="car player2"
-                                            style={{ left: `${car2Position}%`, top: '60%' }}
-                                        >
-                                            🚙
-                                        </div>
+
+                                    </>
+                                ) : (
+                                    <div
+                                        className="text-center"
+                                        style={{ fontWeight: 'bold', fontSize: '24px' }}
+                                    >
+                                        Waiting for all players to join...
                                     </div>
-                                </>
-                            ) : (
-                                <MDBCardText className="text-center">
-                                    Waiting for all players to join...
-                                </MDBCardText>
-                            )}
-                        </MDBCardBody>
-                    </MDBCard>
-                )}
-            </MDBCol>
-        </MDBRow>
-    </MDBContainer>
+                                )}
+                            </MDBCardBody>
+                        </MDBCard>
+                    )}
+                </MDBCol>
+            </MDBRow>
+        </MDBContainer>
     );
 };
 
