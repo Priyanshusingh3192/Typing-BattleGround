@@ -120,12 +120,12 @@ export default function ProfilePage() {
                                 
                                 <div className="mb-4">
                                     <p className="text-white-50 mb-1">Location</p>
-                                    <h6 className="text-white">San Francisco, CA</h6>
+                                    <h6 className="text-white">Uttar Pradesh, India</h6>
                                 </div>
                                 
                                 <div className="mb-4">
                                     <p className="text-white-50 mb-1">Joined</p>
-                                    <h6 className="text-white">March 2024</h6>
+                                    <h6 className="text-white">January 2025</h6>
                                 </div>
 
                                 {/* Game Statistics */}
