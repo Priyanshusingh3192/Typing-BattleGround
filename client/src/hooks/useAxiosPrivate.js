@@ -40,4 +40,4 @@ const useAxiosPrivate = () => {
     }, [newUser, refresh])
     return axiosPrivate;
 }
-export default useAxiosPrivate
+export default useAxiosPrivate;

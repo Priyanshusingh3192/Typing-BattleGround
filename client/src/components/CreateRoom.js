@@ -37,33 +37,36 @@ function CreateRoom() {
   };
 
   return (
-    <MDBContainer className="d-flex flex-column align-items-center justify-content-center vh-100">
-      <MDBCard style={{ width: "400px" }}>
-        <MDBCardBody className="text-center">
-          <MDBTypography tag="h3" className="mb-4">
-            Create or Join Room
-          </MDBTypography>
-          <MDBBtn color="primary" onClick={handleCreateRoom} className="mb-3">
-            Generate Room Code
-          </MDBBtn>
-          {roomCode && (
-            <MDBTypography tag="p" className="mt-3">
-              Room Code: <strong>{roomCode}</strong>
-            </MDBTypography>
-          )}
-          <MDBInput
-            className="mt-4"
-            label="Enter Room Code"
-            type="text"
-            value={roomCode}
-            onChange={(e) => setRoomCode(e.target.value)}
-          />
-          <MDBBtn color="success" className="mt-3" onClick={handleJoinRoom}>
-            Join Room
-          </MDBBtn>
-        </MDBCardBody>
-      </MDBCard>
-    </MDBContainer>
+    <div
+    style={{
+      height: "90vh",
+      width: "100vw",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#000", // Black background
+      overflow: "hidden", // Prevent scrolling
+    }}
+  >
+    <MDBCard
+      style={{
+        width: "400px",
+        backgroundColor: "#574b4b", // Dark grey box
+        color: "white",
+        borderRadius: "12px",
+        boxShadow: "0 4px 10px rgba(17, 224, 48, 0.2)",
+        padding: "20px",
+        textAlign: "center",
+      }}
+    >
+      <MDBCardBody>
+        <MDBTypography tag="h3" className="mb-4">
+          Create or Join Room
+        </MDBTypography>
+        <MDBBtn color="primary" className="mb-3" onClick={handleCreateRoom} >Generate Room Code</MDBBtn>
+      </MDBCardBody>
+    </MDBCard>
+  </div>
   );
 }
 

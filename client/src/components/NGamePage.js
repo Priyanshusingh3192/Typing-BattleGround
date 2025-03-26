@@ -14,10 +14,14 @@ import {
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import { User } from "../context/User";
 import "./CSS/GamePage.css";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const socket = io("http://localhost:8000");
 
 function NGamePage() {
+
+    const axiosPrivate = useAxiosPrivate();
+
     const { roomCode } = useParams();
     const [text, setText] = useState("");
     const [speed, setSpeed] = useState(0);
@@ -30,7 +34,7 @@ function NGamePage() {
     const startTime = useRef(null);
 
     const { newUser } = useContext(User);
-    const targetText = "The quick brown fox jumps over the lazy dog";
+    const targetText = "The quick brown fox jumps over the lazy dog All three elements stay in a single horizontal row.Images and text shrink proportionally to avoid overflowing.Layout scales smoothly across screen sizes.";
 
     // Join the room when the component mounts
     useEffect(() => {
@@ -84,6 +88,16 @@ function NGamePage() {
 
         socket.emit("typing-update", { room: roomCode, email: newUser.email, speed: calculatedSpeed });
     };
+    useEffect(() => {
+        if (isStarted) {
+            const interval = setInterval(() => {
+                handleTyping({ target: { value: text } }); // Simulate typing event
+            }, 1000); // Run every second
+    
+            return () => clearInterval(interval); // Cleanup on unmount
+        }
+    }, [isStarted, text]); // Re-run when game starts or text changes
+    
 
     // Handle game start
     const handleStart = () => {
@@ -94,7 +108,31 @@ function NGamePage() {
         socket.emit("start-game", { room: roomCode, email: newUser.email, startTime: currentStartTime });
     };
 
+
+
     // Timer logic
+    // useEffect(() => {
+    //     if (isStarted && timer > 0) {
+    //         const interval = setInterval(() => {
+    //             const elapsed = Math.floor((Date.now() - startTime.current) / 1000);
+    //             setTimer(Math.max(0, 60 - elapsed));
+    //         }, 1000);
+
+    //         return () => clearInterval(interval);
+    //     }
+
+    //     if (timer === 0) {
+    //         const topPlayer =
+    //             leaderboard[0]?.email === newUser.email ? "You Win!" : `${leaderboard[0]?.email} Wins!`;
+    //         setWinner(topPlayer || "It's a Tie!");
+    //         setShowResult(true);
+
+    //         setTimeout(() => {
+    //             setShowResult(false);
+    //         }, 10000);
+    //     }
+    // }, [isStarted, timer, leaderboard]);
+
     useEffect(() => {
         if (isStarted && timer > 0) {
             const interval = setInterval(() => {
@@ -106,16 +144,36 @@ function NGamePage() {
         }
 
         if (timer === 0) {
-            const topPlayer =
-                leaderboard[0]?.email === newUser.email ? "You Win!" : `${leaderboard[0]?.email} Wins!`;
-            setWinner(topPlayer || "It's a Tie!");
+            const sortedLeaderboard = [...leaderboard].sort((a, b) => b.initialSpeed - a.initialSpeed);
+            const topPlayer = sortedLeaderboard[0]?.email;
+            const losers = sortedLeaderboard.slice(1).map(player => player.email);
+
+            const winnerMessage =
+                topPlayer === newUser.email ? "You Win!" : `${topPlayer} Wins!`;
+            setWinner(winnerMessage || "It's a Tie!");
             setShowResult(true);
+
+            // Make API call to save match data using Axios
+            if (sortedLeaderboard.length > 0) {
+                axiosPrivate
+                    .post("http://localhost:8000/matches/savedata", {
+                        winner: [topPlayer],
+                        loser: losers,
+                    })
+                    .then((response) => {
+                        console.log("Match data saved:", response.data);
+                    })
+                    .catch((error) => {
+                        console.error("Error saving match data:", error);
+                    });
+            }
 
             setTimeout(() => {
                 setShowResult(false);
             }, 10000);
         }
     }, [isStarted, timer, leaderboard]);
+
 
     return (
         <MDBContainer
@@ -146,12 +204,12 @@ function NGamePage() {
                         width: "90%",
                         maxWidth: "700px",
                         height: "550px",
-                        backgroundColor: "#f5f5dc",
+                        backgroundColor: "#574b4b",
                         border: "5px solid #4de352",
                         borderRadius: "10px",
                     }}
                 >
-                    <MDBCardBody style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <MDBCardBody style={{ display: "flex", flexDirection: "column", alignItems: "center",color:"white" }}>
                         <MDBTypography tag="h3" style={{ marginBottom: "16px", fontWeight: "bold" }}>
                             Room Code: {roomCode}
                         </MDBTypography>
@@ -165,9 +223,9 @@ function NGamePage() {
                             {isStarted ? "Game Started" : "Start Game"}
                         </MDBBtn>
 
-                        <MDBTypography tag="h5" style={{ marginBottom: "8px", color: "#6c757d" }}>
+                        {/* <MDBTypography tag="h5" style={{ marginBottom: "8px", color: "white" }}>
                             Type the following text:
-                        </MDBTypography>
+                        </MDBTypography> */}
                         <MDBTypography tag="p" style={{ marginBottom: "16px", fontWeight: "bold" }}>
                             {targetText}
                         </MDBTypography>
@@ -217,10 +275,10 @@ function NGamePage() {
                             </p>
                         </div>
 
-                        <MDBTypography tag="p" style={{ marginBottom: "8px", color: "#6c757d" }}>
+                   {/*     <MDBTypography tag="p" style={{ marginBottom: "8px", color: "#6c757d" }}>
                             Matched Words:{" "}
                             <span style={{ color: "green", fontWeight: "bold" }}>{matchedWords}</span>
-                        </MDBTypography>
+                        </MDBTypography>   */}
                     </MDBCardBody>
                 </MDBCard>
 
@@ -230,7 +288,7 @@ function NGamePage() {
                         width: "90%",
                         maxWidth: "300px",
                         height: "550px",
-                        backgroundColor: "#f5f5dc",
+                        backgroundColor: "#574b4b",
                         border: "5px solid #4de352",
                         borderRadius: "10px",
                     }}
@@ -243,6 +301,7 @@ function NGamePage() {
                                 marginBottom: "16px",
                                 fontWeight: "bold",
                                 textDecoration: "underline",
+                                color:"white"
                             }}
                         >
                             Leaderboard
@@ -253,6 +312,7 @@ function NGamePage() {
                                     key={index}
                                     style={{
                                         marginBottom: "8px",
+                                        color:"white",
                                         backgroundColor: "#f0f0f0", // Light background color
                                         border: "1px solid #ccc", // Border for each item
                                         padding: "5px 10px", // Padding for each item
@@ -262,7 +322,11 @@ function NGamePage() {
                                         borderRadius: "5px" // Optional: Rounded corners for better look
                                     }}
                                 >
-                                    <span style={{ flex: 1 }}>{player.username}</span>
+                                    <span style={{ flex: 1 }}>
+                                        {player.email.split('@')[0].slice(0, 9)}
+                                    </span>
+
+
                                     <span>{player.initialSpeed} WPM</span>
                                 </li>
                             ))}

@@ -37,28 +37,40 @@ const PlayRandomOne = () => {
             console.error('User data is not available yet.');
             return;
         }
+
         const newEmail = newUser.email;
+
+        // Emit play-random event
         newSocket.emit('play-random', { roomId, userEmail: newEmail });
 
-        newSocket.on('userJoined', (data) => {
+        // Event listeners
+        const handleUserJoined = (data) => {
             setUsersInRoom(data.users);
-        });
+        };
 
-        newSocket.on('startGame', () => {
+        const handleStartGame = () => {
+            console.log("Hello siri start the game");
             setIsGameStarted(true);
             setLoading(false);
             startTimer();
-        });
+        };
 
-        newSocket.on('receiveWpm', (data) => {
+        const handleReceiveWpm = (data) => {
             const { userEmail, opp_wpm } = data;
             if (userEmail !== newUser.email) {
                 setOpponentWpm(opp_wpm);
             }
-        });
+        };
 
+        newSocket.on('userJoined', handleUserJoined);
+        newSocket.on('startGame', handleStartGame);
+        newSocket.on('receiveWpm', handleReceiveWpm);
+
+        // Cleanup function to remove event listeners
         return () => {
-            newSocket.disconnect();
+            newSocket.off('userJoined', handleUserJoined);
+            newSocket.off('startGame', handleStartGame);
+            newSocket.off('receiveWpm', handleReceiveWpm);
         };
     }, [roomId, newUser.email]);
 
@@ -245,7 +257,7 @@ const PlayRandomOne = () => {
                                                 <div style={{ fontSize: '60px' }}>🏎</div>
                                             </div>
                                         </div>
-
+                                        
                                     </>
                                 ) : (
                                     <div

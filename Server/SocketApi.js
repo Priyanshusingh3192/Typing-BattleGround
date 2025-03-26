@@ -174,13 +174,13 @@ module.exports = (io) => {
     // Random Online play Logic 
 
     socket.on('play-random', (data) => {
-      // Find the first room with space available (less than 4 players)
+      // Find the first room with space available (less than 2 players)
       console.log("i am from play-random ", data);
       const {_, userEmail} = data;
       let roomId = null;
       for (let room in OnlineRooms) {
           if (OnlineRooms[room].users.length < 2) {
-              roomId = room;
+              roomId = room; 
               break;
           }
       }
@@ -202,8 +202,16 @@ module.exports = (io) => {
       console.log("Room Length: ",OnlineRooms[roomId].users.length, "Total Rooms :",OnlineRooms);
       // If the room reaches 2 players, start the game
       if (OnlineRooms[roomId].users.length === 2 && !OnlineRooms[roomId].gameStarted) {
+          console.log("hello siri");
           io.to(roomId).emit('startGame');
           OnlineRooms[roomId].gameStarted = true;
+
+          // Schedule room deletion after 1 minute
+          setTimeout(() => {
+              console.log(`Deleting room: ${roomId} after 1 minute`);
+              delete OnlineRooms[roomId];
+              io.to(roomId).emit('roomDeleted', { roomId });
+          }, 60000); // 60000 milliseconds = 1 minute
       }
       // If there are less than 2 users, notify the room that they are waiting
       if (OnlineRooms[roomId].users.length < 2) {

@@ -28,6 +28,11 @@ app.use("/user", require("./routes/user"));
 app.use("/auth", require("./routes/auth"));
 app.use("/refresh", require("./routes/refresh"));
 
+// Matches 
+app.use("/matches", require("./routes/match"));
+
+
+
 // Root route
 app.get('/', (req, res) => {
   res.send('Hello, World!');

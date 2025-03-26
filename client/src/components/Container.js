@@ -16,6 +16,7 @@ import Navbar from './Navbar';
 import Navbar1 from './Navbar1';
 import { User } from "../context/User";
 import PlayRandomOne from './PlayRandomOne';
+import Profile from './Profile';
 
 const Container = () => {
     const { newUser } = useContext(User);
@@ -52,7 +53,7 @@ const Container = () => {
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/otp" element={<Otp />} />
-                    <Route path="/play-random" element={<PlayRandomOne />} />
+                   
 
                     {newUser.accessToken && (
                         <>
@@ -63,6 +64,8 @@ const Container = () => {
                             <Route path="/join-room" element={<JoinRoom />} />
                             <Route path="/TWOroom/:roomCode" element={<GamePage />} />
                             <Route path="/room/:roomCode" element={<NGamePage />} />
+                             <Route path="/play-random" element={<PlayRandomOne />} />
+                             <Route path="/profile" element={<Profile />} />
                         </>
                     )}
                 </Routes>
