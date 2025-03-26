@@ -31,6 +31,7 @@ function NGamePage() {
     const [isStarted, setIsStarted] = useState(false);
     const [showResult, setShowResult] = useState(false);
     const [winner, setWinner] = useState("");
+    const [hasTimerEnded, setHasTimerEnded] = useState(false);
     const startTime = useRef(null);
 
     const { newUser } = useContext(User);
@@ -45,7 +46,6 @@ function NGamePage() {
                 console.log("update");
                 setLeaderboard(data.leaderboard);
             }
-
         });
 
         socket.on("start-game", (data) => {
@@ -83,44 +83,65 @@ function NGamePage() {
         setMatchedWords(matchCount);
 
         const elapsedTime = (Date.now() - startTime.current) / 1000 / 60; // Time in minutes
+       
         const calculatedSpeed = Math.floor(matchCount / elapsedTime);
         setSpeed(calculatedSpeed);
 
         socket.emit("typing-update", { room: roomCode, email: newUser.email, speed: calculatedSpeed });
     };
+    
     useEffect(() => {
-        if (isStarted) {
+        if (isStarted && timer > 0) {
             const interval = setInterval(() => {
                 handleTyping({ target: { value: text } }); // Simulate typing event
             }, 1000); // Run every second
     
             return () => clearInterval(interval); // Cleanup on unmount
         }
-    }, [isStarted, text]); // Re-run when game starts or text changes
+    }, [isStarted, text, timer]); // Re-run when game starts or text changes
     
 
     // Handle game start
-    const handleStart = () => {
+    function handleStart() {
         const currentStartTime = Date.now();
         setIsStarted(true);
         startTime.current = currentStartTime;
 
         socket.emit("start-game", { room: roomCode, email: newUser.email, startTime: currentStartTime });
-    };
+    }
 
 
 
     useEffect(() => {
         if (isStarted && timer > 0) {
             const interval = setInterval(() => {
+                // Ensure startTime.current is initialized
+                if (!startTime.current) {
+                    startTime.current = Date.now();
+                }
+
+                // Calculate elapsed time
                 const elapsed = Math.floor((Date.now() - startTime.current) / 1000);
-                setTimer(Math.max(0, 60 - elapsed));
+
+                // Update the timer
+                const newTimerValue = Math.max(0, 60 - elapsed);
+                setTimer(newTimerValue);
+
+                // Clear the interval if the timer reaches 0
+                if (newTimerValue === 0) {
+                    clearInterval(interval);
+                }
             }, 1000);
 
-            return () => clearInterval(interval);
+            return () => clearInterval(interval); // Cleanup interval on unmount
         }
+    }, [isStarted, timer]);
 
-        if (timer === 0) {
+
+    useEffect(() => {
+        if (timer === 0 && !hasTimerEnded) {
+            setHasTimerEnded(true); // Mark that the timer has ended
+
             const sortedLeaderboard = [...leaderboard].sort((a, b) => b.initialSpeed - a.initialSpeed);
             const topPlayer = sortedLeaderboard[0]?.email;
             const losers = sortedLeaderboard.slice(1).map(player => player.email);
@@ -145,11 +166,12 @@ function NGamePage() {
                     });
             }
 
+            // Hide the result pop-up after 5 seconds
             setTimeout(() => {
                 setShowResult(false);
-            }, 10000);
+            }, 5000);
         }
-    }, [isStarted, timer, leaderboard]);
+    }, [isStarted, timer, leaderboard, hasTimerEnded]);
 
 
     return (

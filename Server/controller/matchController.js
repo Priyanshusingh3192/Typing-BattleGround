@@ -8,42 +8,35 @@ const storeData = async (req, res) => {
         return res.status(400).json({ error: 'Winner and loser data are required.' });
     }
 
-    const loserEmail = loser[loser.length - 1]; // Get the last loser email
-    const winnerEmail = winner[0]; // Get the first winner email
-
     try {
-        // Process the winner
+        // Process the winners
         for (const winEmail of winner) {
             // Find or create the match record for the winner
             let winnerRecord = await Match.findOne({ userEmail: winEmail });
 
             if (!winnerRecord) {
-                winnerRecord = new Match({ userEmail: winEmail, matches: [] });
+                // Create a new record if it doesn't exist
+                winnerRecord = new Match({ userEmail: winEmail, wins: 0, losses: 0 });
             }
 
-            // Add the match for the winner
-            winnerRecord.matches.push({
-                opponentEmail: loserEmail,
-                winnerEmail: winEmail,
-            });
+            // Increment the wins count
+            winnerRecord.wins += 1;
 
             await winnerRecord.save();
         }
 
-        // Process the loser
+        // Process the losers
         for (const loseEmail of loser) {
             // Find or create the match record for the loser
             let loserRecord = await Match.findOne({ userEmail: loseEmail });
 
             if (!loserRecord) {
-                loserRecord = new Match({ userEmail: loseEmail, matches: [] });
+                // Create a new record if it doesn't exist
+                loserRecord = new Match({ userEmail: loseEmail, wins: 0, losses: 0 });
             }
 
-            // Add the match for the loser
-            loserRecord.matches.push({
-                opponentEmail: winnerEmail,
-                winnerEmail: winnerEmail,
-            });
+            // Increment the losses count
+            loserRecord.losses += 1;
 
             await loserRecord.save();
         }
@@ -70,7 +63,7 @@ const getData = async (req, res) => {
             return res.status(404).json({ message: 'No match data found for this user.' });
         }
 
-        res.status(200).json({ matches: matchRecord.matches });
+        res.status(200).json({ wins: matchRecord.wins, losses: matchRecord.losses });
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve match data', details: error.message });
     }

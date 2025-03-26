@@ -7,22 +7,16 @@ const MatchesSchema = new Schema({
         required: true,
         unique: true // Ensures one document per user
     },
-    matches: [
-        {
-            opponentEmail: {
-                type: String, // Email of the opponent
-                required: true
-            },
-            winnerEmail: {
-                type: String, // Email of the winner
-                required: true
-            },
-            date: {
-                type: Date, // Date of the match
-                default: Date.now
-            }
-        }
-    ]
+    wins: {
+        type: Number, // Count of wins
+        default: 0, // Default value is 0
+        required: true
+    },
+    losses: {
+        type: Number, // Count of losses
+        default: 0, // Default value is 0
+        required: true
+    }
 });
 
 module.exports = mongoose.model('Match', MatchesSchema);
