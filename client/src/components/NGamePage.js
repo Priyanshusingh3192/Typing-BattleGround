@@ -110,29 +110,6 @@ function NGamePage() {
 
 
 
-    // Timer logic
-    // useEffect(() => {
-    //     if (isStarted && timer > 0) {
-    //         const interval = setInterval(() => {
-    //             const elapsed = Math.floor((Date.now() - startTime.current) / 1000);
-    //             setTimer(Math.max(0, 60 - elapsed));
-    //         }, 1000);
-
-    //         return () => clearInterval(interval);
-    //     }
-
-    //     if (timer === 0) {
-    //         const topPlayer =
-    //             leaderboard[0]?.email === newUser.email ? "You Win!" : `${leaderboard[0]?.email} Wins!`;
-    //         setWinner(topPlayer || "It's a Tie!");
-    //         setShowResult(true);
-
-    //         setTimeout(() => {
-    //             setShowResult(false);
-    //         }, 10000);
-    //     }
-    // }, [isStarted, timer, leaderboard]);
-
     useEffect(() => {
         if (isStarted && timer > 0) {
             const interval = setInterval(() => {
@@ -240,6 +217,7 @@ function NGamePage() {
                                 resize: "none",
                                 border: "1px solid black",
                                 borderRadius: "5px",
+                                color: "white",
                             }}
                             disabled={!isStarted}
                         />
@@ -275,10 +253,7 @@ function NGamePage() {
                             </p>
                         </div>
 
-                   {/*     <MDBTypography tag="p" style={{ marginBottom: "8px", color: "#6c757d" }}>
-                            Matched Words:{" "}
-                            <span style={{ color: "green", fontWeight: "bold" }}>{matchedWords}</span>
-                        </MDBTypography>   */}
+                 
                     </MDBCardBody>
                 </MDBCard>
 
@@ -312,7 +287,7 @@ function NGamePage() {
                                     key={index}
                                     style={{
                                         marginBottom: "8px",
-                                        color:"white",
+                                        color:"black",
                                         backgroundColor: "#f0f0f0", // Light background color
                                         border: "1px solid #ccc", // Border for each item
                                         padding: "5px 10px", // Padding for each item

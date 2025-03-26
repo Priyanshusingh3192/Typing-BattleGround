@@ -221,8 +221,8 @@ module.exports = (io) => {
   });
 
   socket.on('wpmUpdate', (data) => {
-    const {userEmail, _, wpm } = data;
-    
+    const { userEmail, fractionTyped, wpm } = data;
+
     let roomId = null;
     for (const room in OnlineRooms) {
         if (OnlineRooms[room].users.includes(userEmail)) {
@@ -231,8 +231,8 @@ module.exports = (io) => {
     }
 
     if (roomId) {
-        console.log(`Updating WPM for user ${userEmail} in room ${roomId}: ${wpm}`);
-        io.to(roomId).emit('receiveWpm', { userEmail, opp_wpm: wpm });
+        console.log(`Updating fractionTyped and WPM for user ${userEmail} in room ${roomId}: ${fractionTyped}, ${wpm}`);
+        io.to(roomId).emit('receiveOpponentData', { userEmail, fractionTyped, wpm });
     } else {
         console.error(`Room not found for user ${userEmail}`);
     }

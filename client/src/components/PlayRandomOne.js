@@ -31,6 +31,7 @@ const PlayRandomOne = () => {
 
     const [car1Position, setCar1Position] = useState(0);
     const [car2Position, setCar2Position] = useState(0);
+    const [opponentFractionTyped, setOpponentFractionTyped] = useState(0);
 
     useEffect(() => {
         if (!newUser || !newUser.email) {
@@ -55,22 +56,25 @@ const PlayRandomOne = () => {
             startTimer();
         };
 
-        const handleReceiveWpm = (data) => {
-            const { userEmail, opp_wpm } = data;
+        const handleReceiveOpponentData = (data) => {
+            const { userEmail, fractionTyped, wpm } = data;
             if (userEmail !== newUser.email) {
-                setOpponentWpm(opp_wpm);
+                const car2Progress = Math.min(Math.max(fractionTyped * 100, 0), 100); // Clamp between 0% and 100%
+                setCar2Position(car2Progress);
+                setOpponentWpm(wpm); // Update opponent's WPM
+                setOpponentFractionTyped(fractionTyped); // Update opponent's fraction of text typed
             }
         };
 
         newSocket.on('userJoined', handleUserJoined);
         newSocket.on('startGame', handleStartGame);
-        newSocket.on('receiveWpm', handleReceiveWpm);
+        newSocket.on('receiveOpponentData', handleReceiveOpponentData);
 
         // Cleanup function to remove event listeners
         return () => {
             newSocket.off('userJoined', handleUserJoined);
             newSocket.off('startGame', handleStartGame);
-            newSocket.off('receiveWpm', handleReceiveWpm);
+            newSocket.off('receiveOpponentData', handleReceiveOpponentData);
         };
     }, [roomId, newUser.email]);
 
@@ -97,6 +101,17 @@ const PlayRandomOne = () => {
         newSocket.emit('wpmUpdate', { userEmail: newUser.email, roomId, wpm: finalWpm });
     };
 
+    // Update WPM every second using useEffect
+    useEffect(() => {
+        if (timeLeft > 0 && timeLeft < 60) {
+            const timeElapsed = 60 - timeLeft; // Calculate elapsed time
+            const realTimeWpm = Math.round((wordsTyped / timeElapsed) * 60); // Calculate WPM
+            setWpm(realTimeWpm); // Update WPM state
+            newSocket.emit('wpmUpdate', { userEmail: newUser.email, roomId, wpm: realTimeWpm }); // Emit WPM update
+        }
+    }, [timeLeft, wordsTyped]); // Dependencies: timeLeft and wordsTyped
+
+    // Handle typing input
     const handleTyping = (event) => {
         const input = event.target.value;
         setUserInput(input);
@@ -112,26 +127,30 @@ const PlayRandomOne = () => {
         }
         setWordsTyped(correctWords);
 
-        const timeElapsed = 60 - timeLeft;
-        if (timeElapsed > 0) {
-            const realTimeWpm = Math.round((correctWords / timeElapsed) * 60);
-            setWpm(realTimeWpm);
-            newSocket.emit('wpmUpdate', { userEmail: newUser.email, roomId, wpm: realTimeWpm });
-        }
+        // Update car position based on the fraction of correct text typed
+        const fractionTyped = correctWords / originalWords.length;
+        const car1Progress = Math.min(Math.max(fractionTyped * 100, 0), 100); // Clamp between 0% and 100%
+        setCar1Position(car1Progress);
+
+        // Emit fractionTyped and WPM to the server
+        const realTimeWpm = Math.round((correctWords / (60 - timeLeft)) * 60); // Calculate WPM
+        setWpm(realTimeWpm);
+        newSocket.emit('wpmUpdate', { userEmail: newUser.email, fractionTyped, wpm: realTimeWpm });
     };
 
+
+    // Update opponent's car position based on their fraction of text typed
     useEffect(() => {
-        const car1Progress = Math.min((wpm / 100) * 100, 100);
-        const car2Progress = Math.min((opponentWpm / 100) * 100, 100);
-        setCar1Position(car1Progress);
+        const car2Progress = Math.min(Math.max(opponentFractionTyped * 100, 0), 100); // Clamp between 0% and 100%
         setCar2Position(car2Progress);
-    }, [wpm, opponentWpm]);
+    }, [opponentFractionTyped]);
 
     return (
         <MDBContainer
             fluid
             style={{
                 height: '100vh',
+                width:'100vw',
                 background: 'black',
                 color: 'white',
                 position: 'relative',
@@ -146,7 +165,7 @@ const PlayRandomOne = () => {
                             <p>Waiting for Players to Join...</p>
                         </div>
                     ) : (
-                        <MDBCard style={{ backgroundColor: 'white', color: 'black' }}>
+                        <MDBCard style={{ backgroundColor: 'white',color: 'black' }}>
                             <MDBCardBody>
                                 <MDBCardTitle tag="h5" className="text-center bg-orange-50 border-4	border-2 border-stone-100	">
                                     Typing Race Game
