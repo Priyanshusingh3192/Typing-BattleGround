@@ -10,13 +10,21 @@ const storeData = async (req, res) => {
 
     try {
         // Process the winners
-        for (const winEmail of winner) {
+        for (const win of winner) {
             // Find or create the match record for the winner
-            let winnerRecord = await Match.findOne({ userEmail: winEmail });
+            let winnerRecord = await Match.findOne({ userEmail: win.email });
 
             if (!winnerRecord) {
                 // Create a new record if it doesn't exist
-                winnerRecord = new Match({ userEmail: winEmail, wins: 0, losses: 0 });
+                winnerRecord = new Match({ 
+                    userEmail: win.email, 
+                    wins: 0, 
+                    losses: 0,
+                    maxWPM: win.wpm 
+                });
+            } else {
+                // Update maxWPM if the new WPM is higher
+                winnerRecord.maxWPM = Math.max(winnerRecord.maxWPM, win.wpm);
             }
 
             // Increment the wins count
@@ -26,13 +34,21 @@ const storeData = async (req, res) => {
         }
 
         // Process the losers
-        for (const loseEmail of loser) {
+        for (const lose of loser) {
             // Find or create the match record for the loser
-            let loserRecord = await Match.findOne({ userEmail: loseEmail });
+            let loserRecord = await Match.findOne({ userEmail: lose.email });
 
             if (!loserRecord) {
                 // Create a new record if it doesn't exist
-                loserRecord = new Match({ userEmail: loseEmail, wins: 0, losses: 0 });
+                loserRecord = new Match({ 
+                    userEmail: lose.email, 
+                    wins: 0, 
+                    losses: 0,
+                    maxWPM: lose.wpm 
+                });
+            } else {
+                // Update maxWPM if the new WPM is higher
+                loserRecord.maxWPM = Math.max(loserRecord.maxWPM, lose.wpm);
             }
 
             // Increment the losses count
@@ -63,7 +79,11 @@ const getData = async (req, res) => {
             return res.status(404).json({ message: 'No match data found for this user.' });
         }
 
-        res.status(200).json({ wins: matchRecord.wins, losses: matchRecord.losses });
+        res.status(200).json({
+            wins: matchRecord.wins,
+            losses: matchRecord.losses,
+            maxWPM: matchRecord.maxWPM
+        });
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve match data', details: error.message });
     }

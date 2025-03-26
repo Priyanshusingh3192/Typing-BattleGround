@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     MDBCol,
     MDBContainer,
@@ -8,156 +8,156 @@ import {
     MDBCardBody,
     MDBCardImage,
     MDBBtn,
-    MDBBreadcrumb,
-    MDBBreadcrumbItem,
+    MDBIcon,
 } from 'mdb-react-ui-kit';
+import { User } from '../context/User';
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 export default function ProfilePage() {
-    return (
-        <section style={{ backgroundColor: '#eee' }}>
-            <MDBContainer className="py-5">
-                {/* Breadcrumb */}
-                <MDBRow>
-                    <MDBCol>
-                        <MDBBreadcrumb className="bg-light rounded-3 p-3 mb-4">
-                            <MDBBreadcrumbItem>
-                                <a href="#">Home</a>
-                            </MDBBreadcrumbItem>
-                            <MDBBreadcrumbItem>
-                                <a href="#">User</a>
-                            </MDBBreadcrumbItem>
-                            <MDBBreadcrumbItem active>User Profile</MDBBreadcrumbItem>
-                        </MDBBreadcrumb>
-                    </MDBCol>
-                </MDBRow>
+    const { newUser } = useContext(User);
+    const axiosPrivate = useAxiosPrivate();
+    const [userData, setUserData] = useState({
+        wins: 0,
+        losses: 0,
+        maxWPM: 0
+    });
 
-                {/* User Profile and Details in Horizontal Alignment */}
-                <MDBRow>
-                    {/* User Profile Section */}
-                    <MDBCol lg="4">
-                        <MDBCard className="mb-4">
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axiosPrivate.post(
+                    "http://localhost:8000/matches/getdata",
+                    { userEmail: newUser.email }
+                );
+                setUserData(response.data);
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        };
+
+        if (newUser?.email) {
+            fetchUserData();
+        }
+    }, [newUser, axiosPrivate]);
+
+    // Calculate win rate
+    const totalGames = userData.wins + userData.losses;
+    const winRate = totalGames > 0 
+        ? ((userData.wins / totalGames) * 100).toFixed(1) 
+        : 0;
+
+    return (
+        <section style={{ 
+            background: 'linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%)',
+            minHeight: '100vh',
+            color: 'white',
+            padding: '4rem 0'
+        }}>
+            <MDBContainer>
+                <MDBRow className="justify-content-center">
+                    <MDBCol lg="4" className="mb-4">
+                        {/* Profile Card */}
+                        <MDBCard className="h-100" style={{
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '20px'
+                        }}>
                             <MDBCardBody className="text-center">
-                                <MDBCardImage
-                                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
-                                    alt="avatar"
-                                    className="rounded-circle"
-                                    style={{ width: '130px' }}
-                                    fluid
-                                />
-                                <p className="text-muted mb-1">Full Stack Developer</p>
-                                <p className="text-muted mb-4">Bay Area, San Francisco, CA</p>
-                                <div className="d-flex justify-content-center mb-2">
-                                    <MDBBtn>Follow</MDBBtn>
-                                    <MDBBtn outline className="ms-1">
-                                        Message
-                                    </MDBBtn>
+                                <div className="mb-4">
+                                    <MDBCardImage
+                                        src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                                        alt="avatar"
+                                        className="rounded-circle"
+                                        style={{
+                                            width: '150px',
+                                            height: '150px',
+                                            border: '4px solid #00ff88',
+                                            padding: '4px',
+                                            backgroundColor: '#2d2d2d'
+                                        }}
+                                        fluid
+                                    />
+                                </div>
+                                <h4 className="mb-2" style={{ color: '#00ff88' }}>{newUser.username}</h4>
+                                <p className="text-white-50 mb-4">Full Stack Developer</p>
+                                
+                                {/* Stats Section */}
+                                <div className="d-flex justify-content-center mb-4">
+                                    <div className="px-3">
+                                        <h5 className="mb-0" style={{ color: '#00ff88' }}>{userData.maxWPM}</h5>
+                                        <small className="text-white-50">Max WPM</small>
+                                    </div>
+                                    <div className="px-3 border-start border-end">
+                                        <h5 className="mb-0" style={{ color: '#00ff88' }}>{userData.wins}</h5>
+                                        <small className="text-white-50">Wins</small>
+                                    </div>
+                                    <div className="px-3">
+                                        <h5 className="mb-0" style={{ color: '#00ff88' }}>{userData.losses}</h5>
+                                        <small className="text-white-50">Losses</small>
+                                    </div>
                                 </div>
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
 
-                    {/* User Details Section */}
                     <MDBCol lg="8">
-                        <MDBCard className="mb-4">
+                        {/* Details Card */}
+                        <MDBCard className="mb-4" style={{
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '20px'
+                        }}>
                             <MDBCardBody>
+                                <h4 className="mb-4" style={{ color: '#00ff88' }}>Profile Information</h4>
+                                
+                                {/* Profile Details */}
+                                <div className="mb-4">
+                                    <p className="text-white-50 mb-1">Email</p>
+                                    <h6 className="text-white">{newUser.email}</h6>
+                                </div>
+                                
+                                <div className="mb-4">
+                                    <p className="text-white-50 mb-1">Location</p>
+                                    <h6 className="text-white">San Francisco, CA</h6>
+                                </div>
+                                
+                                <div className="mb-4">
+                                    <p className="text-white-50 mb-1">Joined</p>
+                                    <h6 className="text-white">March 2024</h6>
+                                </div>
+
+                                {/* Game Statistics */}
+                                <h4 className="mb-4 mt-5" style={{ color: '#00ff88' }}>Game Statistics</h4>
                                 <MDBRow>
-                                    <MDBCol sm="4">
-                                        <MDBCardText>Full Name</MDBCardText>
+                                    <MDBCol md="6" className="mb-4">
+                                        <div className="p-4" style={{
+                                            background: 'rgba(0, 255, 136, 0.1)',
+                                            borderRadius: '15px'
+                                        }}>
+                                            <h6 className="text-white-50">Highest WPM</h6>
+                                            <h2 className="text-white">{userData.maxWPM}</h2>
+                                            <p className="text-white-50 mb-0">Your personal best</p>
+                                        </div>
                                     </MDBCol>
-                                    <MDBCol sm="8">
-                                        <MDBCardText className="text-muted">Johnathan Smith</MDBCardText>
-                                    </MDBCol>
-                                </MDBRow>
-                                <hr />
-                                <MDBRow>
-                                    <MDBCol sm="4">
-                                        <MDBCardText>Email</MDBCardText>
-                                    </MDBCol>
-                                    <MDBCol sm="8">
-                                        <MDBCardText className="text-muted">example@example.com</MDBCardText>
-                                    </MDBCol>
-                                </MDBRow>
-                                <hr />
-                                <MDBRow>
-                                    <MDBCol sm="4">
-                                        <MDBCardText>Phone</MDBCardText>
-                                    </MDBCol>
-                                    <MDBCol sm="8">
-                                        <MDBCardText className="text-muted">(097) 234-5678</MDBCardText>
-                                    </MDBCol>
-                                </MDBRow>
-                                <hr />
-                                <MDBRow>
-                                    <MDBCol sm="4">
-                                        <MDBCardText>Mobile</MDBCardText>
-                                    </MDBCol>
-                                    <MDBCol sm="8">
-                                        <MDBCardText className="text-muted">(098) 765-4321</MDBCardText>
-                                    </MDBCol>
-                                </MDBRow>
-                                <hr />
-                                <MDBRow>
-                                    <MDBCol sm="4">
-                                        <MDBCardText>Address</MDBCardText>
-                                    </MDBCol>
-                                    <MDBCol sm="8">
-                                        <MDBCardText className="text-muted">Bay Area, San Francisco, CA</MDBCardText>
+                                    <MDBCol md="6" className="mb-4">
+                                        <div className="p-4" style={{
+                                            background: 'rgba(0, 255, 136, 0.1)',
+                                            borderRadius: '15px'
+                                        }}>
+                                            <h6 className="text-white-50">Win Rate</h6>
+                                            <h2 className="text-white">{winRate}%</h2>
+                                            <p className="text-white-50 mb-0">
+                                                {userData.wins} wins out of {totalGames} games
+                                            </p>
+                                        </div>
                                     </MDBCol>
                                 </MDBRow>
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
                 </MDBRow>
-
-                {/* Matches Section */}
-                <MDBRow className="mt-4 text-center">
-                    <MDBCol lg="12">
-                        <MDBCard className="mb-4">
-                            <MDBCardBody>
-                                <h1 className="text-center mb-4 bg-black text-white " style={{borderRadius:'20px'}}>Matches</h1>
-                                <MDBRow className="justify-content-center align-items-center">
-                                    {/* Winning Match */}
-                                    <MDBCol md="4">
-                                        <MDBCardImage
-                                            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
-                                            alt="Winner"
-                                            className="rounded-circle"
-                                            style={{ width: '100px', height: '100px', border: '5px solid gold' }}
-                                            fluid
-                                        />
-                                        <MDBCardText className="mt-2 fw-bold">Winner: User 1</MDBCardText>
-                                    </MDBCol>
-
-                                    {/* Match 1 */}
-                                    <MDBCol md="4">
-                                        <MDBCardImage
-                                            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava4-bg.webp"
-                                            alt="User 2"
-                                            className="rounded-circle"
-                                            style={{ width: '80px', height: '80px' }}
-                                            fluid
-                                        />
-                                        <MDBCardText className="mt-2">User 2</MDBCardText>
-                                    </MDBCol>
-
-                                    {/* Match 2 */}
-                                    <MDBCol md="4">
-                                        <MDBCardImage
-                                            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
-                                            alt="User 3"
-                                            className="rounded-circle"
-                                            style={{ width: '80px', height: '80px' }}
-                                            fluid
-                                        />
-                                        <MDBCardText className="mt-2">User 3</MDBCardText>
-                                    </MDBCol>
-                                </MDBRow>
-                            </MDBCardBody>
-                        </MDBCard>
-                    </MDBCol>
-                </MDBRow>
-
-
             </MDBContainer>
         </section>
     );

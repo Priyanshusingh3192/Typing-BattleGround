@@ -143,20 +143,29 @@ function NGamePage() {
             setHasTimerEnded(true); // Mark that the timer has ended
 
             const sortedLeaderboard = [...leaderboard].sort((a, b) => b.initialSpeed - a.initialSpeed);
-            const topPlayer = sortedLeaderboard[0]?.email;
-            const losers = sortedLeaderboard.slice(1).map(player => player.email);
+            const topPlayer = {
+                email: sortedLeaderboard[0]?.email,
+                wpm: sortedLeaderboard[0]?.initialSpeed
+            };
+            const losers = sortedLeaderboard.slice(1).map(player => ({
+                email: player.email,
+                wpm: player.initialSpeed
+            }));
 
             const winnerMessage =
-                topPlayer === newUser.email ? "You Win!" : `${topPlayer} Wins!`;
+                topPlayer.email === newUser.email ? "You Win!" : `${topPlayer.email} Wins!`;
             setWinner(winnerMessage || "It's a Tie!");
             setShowResult(true);
 
-            // Make API call to save match data using Axios
+            // Make API call to save match data using Axios with WPM data
             if (sortedLeaderboard.length > 0) {
                 axiosPrivate
                     .post("http://localhost:8000/matches/savedata", {
-                        winner: [topPlayer],
-                        loser: losers,
+                        winner: [{
+                            email: topPlayer.email,
+                            wpm: topPlayer.wpm
+                        }],
+                        loser: losers
                     })
                     .then((response) => {
                         console.log("Match data saved:", response.data);
