@@ -15,6 +15,7 @@ import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import { User } from "../context/User";
 import "./CSS/GamePage.css";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { motion, AnimatePresence } from 'framer-motion';
 
 const socket = io("http://localhost:8000");
 
@@ -184,186 +185,267 @@ function NGamePage() {
 
 
     return (
-        <MDBContainer
-            fluid
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             style={{
-                position: "relative",
-                minHeight: "100vh",
-                backgroundColor: "#000",
-                overflowX: "hidden",
-                overflowY: "hidden",
+                minHeight: '100vh',
+                background: 'linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%)',
+                padding: '2rem',
+                position: 'relative',
+                overflow: 'hidden'
             }}
         >
-            {/* Game UI */}
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    gap: "20px",
-                    marginTop: "40px",
-                    flexWrap: "wrap",
-                    width: "100%",
+            {/* Animated Background Effect */}
+            <motion.div 
+                animate={{ 
+                    background: [
+                        'radial-gradient(circle at 20% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%)',
+                        'radial-gradient(circle at 80% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%)',
+                        'radial-gradient(circle at 20% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%)'
+                    ]
                 }}
-            >
-                {/* Typing Area */}
-                <MDBCard
-                    style={{
-                        width: "90%",
-                        maxWidth: "700px",
-                        height: "550px",
-                        backgroundColor: "#574b4b",
-                        border: "5px solid #4de352",
-                        borderRadius: "10px",
-                    }}
-                >
-                    <MDBCardBody style={{ display: "flex", flexDirection: "column", alignItems: "center",color:"white" }}>
-                        <MDBTypography tag="h3" style={{ marginBottom: "16px", fontWeight: "bold" }}>
-                            Room Code: {roomCode}
-                        </MDBTypography>
+                transition={{ duration: 10, repeat: Infinity }}
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    pointerEvents: 'none'
+                }}
+            />
 
-                        <MDBBtn
-                            onClick={handleStart}
-                            color="primary"
-                            style={{ marginBottom: "16px" }}
-                            disabled={isStarted}
-                        >
-                            {isStarted ? "Game Started" : "Start Game"}
-                        </MDBBtn>
-
-                        {/* <MDBTypography tag="h5" style={{ marginBottom: "8px", color: "white" }}>
-                            Type the following text:
-                        </MDBTypography> */}
-                        <MDBTypography tag="p" style={{ marginBottom: "16px", fontWeight: "bold" }}>
-                            {targetText}
-                        </MDBTypography>
-                        <MDBTextArea
-                            label="Start Typing..."
-                            value={text}
-                            onChange={handleTyping}
-                            rows={4}
-                            style={{
-                                marginBottom: "16px",
-                                width: "100%",
-                                resize: "none",
-                                border: "1px solid black",
-                                borderRadius: "5px",
-                                color: "white",
-                            }}
-                            disabled={!isStarted}
-                        />
-                        <MDBProgress style={{ width: "75%", marginBottom: "16px" }}>
-                            <MDBProgressBar
-                                width={(matchedWords / targetText.split(" ").length) * 100}
-                                valuemin={0}
-                                valuemax={100}
-                                bgColor="info"
-                                striped
-                                animated
-                            />
-                        </MDBProgress>
-
-                        <div
-                            style={{
-                                width: "150px",
-                                height: "150px",
-                                backgroundColor: "#f5f5dc",
-                                color: "black",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderRadius: "50%",
-                                border: "10px solid #023330",
-                                textAlign: "center",
-                                fontSize: "16px",
-                            }}
-                        >
-                            <p>
-                                Timer <br />
-                                <span style={{ fontWeight: "bold", fontSize: "20px" }}>{timer}s</span>
-                            </p>
-                        </div>
-
-                 
-                    </MDBCardBody>
-                </MDBCard>
-
-                {/* Leaderboard */}
-                <MDBCard
-                    style={{
-                        width: "90%",
-                        maxWidth: "300px",
-                        height: "550px",
-                        backgroundColor: "#574b4b",
-                        border: "5px solid #4de352",
-                        borderRadius: "10px",
-                    }}
-                >
-                    <MDBCardBody>
-                        <MDBTypography
-                            tag="h5"
-                            style={{
-                                textAlign: "center",
-                                marginBottom: "16px",
-                                fontWeight: "bold",
-                                textDecoration: "underline",
-                                color:"white"
-                            }}
-                        >
-                            Leaderboard
-                        </MDBTypography>
-                        <ol style={{ paddingLeft: "20px", fontSize: "16px", color: "black" }}>
-                            {leaderboard.map((player, index) => (
-                                <li
-                                    key={index}
-                                    style={{
-                                        marginBottom: "8px",
-                                        color:"black",
-                                        backgroundColor: "#f0f0f0", // Light background color
-                                        border: "1px solid #ccc", // Border for each item
-                                        padding: "5px 10px", // Padding for each item
-                                        display: "flex", // Flexbox to display content in a row
-                                        justifyContent: "space-between", // Ensure the content is spread out
-                                        alignItems: "center", // Align items vertically in the center
-                                        borderRadius: "5px" // Optional: Rounded corners for better look
-                                    }}
+            <MDBContainer fluid className="position-relative">
+                <div className="d-flex flex-wrap justify-content-center gap-4">
+                    {/* Game Card */}
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <MDBCard style={{
+                            width: "90%",
+                            maxWidth: "800px",
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(0, 255, 136, 0.2)',
+                            borderRadius: '20px',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                        }}>
+                            <MDBCardBody className="p-4">
+                                {/* Room Code and Start Button */}
+                                <motion.div
+                                    className="text-center mb-4"
+                                    initial={{ scale: 0.9 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ duration: 0.3 }}
                                 >
-                                    <span style={{ flex: 1 }}>
-                                        {player.email.split('@')[0].slice(0, 9)}
-                                    </span>
+                                    <h2 style={{ color: '#00ff88', marginBottom: '1rem' }}>
+                                        Room Code: {roomCode}
+                                    </h2>
+                                    
+                                    <MDBBtn
+                                        onClick={handleStart}
+                                        disabled={isStarted}
+                                        style={{
+                                            background: 'linear-gradient(45deg, #00ff88, #00b8ff)',
+                                            padding: '12px 30px',
+                                            fontSize: '1.1rem',
+                                            border: 'none',
+                                            borderRadius: '12px',
+                                            boxShadow: '0 4px 15px rgba(0, 255, 136, 0.2)',
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                    >
+                                        {isStarted ? "Game Started" : "Start Game"}
+                                    </MDBBtn>
+                                </motion.div>
 
+                                {/* Timer with Pulse Animation */}
+                                <motion.div
+                                    animate={{
+                                        scale: timer <= 10 ? [1, 1.1, 1] : 1,
+                                    }}
+                                    transition={{
+                                        duration: 0.5,
+                                        repeat: timer <= 10 ? Infinity : 0
+                                    }}
+                                    className="text-center mb-4"
+                                >
+                                    <div style={{
+                                        width: '120px',
+                                        height: '120px',
+                                        margin: '0 auto',
+                                        background: 'rgba(0, 255, 136, 0.1)',
+                                        borderRadius: '50%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid rgba(0, 255, 136, 0.3)',
+                                    }}>
+                                        <div style={{
+                                            fontSize: '2rem',
+                                            color: timer <= 10 ? '#ff4444' : '#00ff88',
+                                            transition: 'color 0.3s ease'
+                                        }}>
+                                            {timer}s
+                                        </div>
+                                    </div>
+                                </motion.div>
 
-                                    <span>{player.initialSpeed} WPM</span>
-                                </li>
-                            ))}
-                        </ol>
+                                {/* Typing Area */}
+                                <div style={{
+                                    background: 'rgba(255, 255, 255, 0.03)',
+                                    borderRadius: '15px',
+                                    padding: '1.5rem',
+                                    marginBottom: '1.5rem'
+                                }}>
+                                    <p style={{
+                                        color: 'rgba(255, 255, 255, 0.9)',
+                                        fontSize: '1.1rem',
+                                        lineHeight: '1.6',
+                                        marginBottom: '1.5rem'
+                                    }}>{targetText}</p>
 
-                    </MDBCardBody>
-                </MDBCard>
-            </div>
+                                    <textarea
+                                        value={text}
+                                        onChange={handleTyping}
+                                        disabled={!isStarted}
+                                        style={{
+                                            width: '100%',
+                                            height: '120px',
+                                            background: 'rgba(255, 255, 255, 0.05)',
+                                            border: '1px solid rgba(0, 255, 136, 0.2)',
+                                            borderRadius: '10px',
+                                            color: 'white',
+                                            padding: '1rem',
+                                            fontSize: '1.1rem',
+                                            resize: 'none'
+                                        }}
+                                        placeholder={isStarted ? "Start typing..." : "Waiting for game to start..."}
+                                    />
+                                </div>
 
-            {/* Winner Display */}
-            {showResult && (
-                <div
-                    style={{
-                        position: "fixed",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        zIndex: 1000,
-                        backgroundColor: "white",
-                        padding: "20px",
-                        borderRadius: "8px",
-                        boxShadow: "0 0 10px rgba(0,0,0,0.5)",
-                        textAlign: "center",
-                    }}
-                >
-                    <MDBTypography tag="h5" style={{ color: "green", marginBottom: "16px" }}>
-                        {winner}
-                    </MDBTypography>
+                                {/* Progress Bar */}
+                                <motion.div
+                                    initial={{ scaleX: 0 }}
+                                    animate={{ scaleX: 1 }}
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <MDBProgress height='20'>
+                                        <MDBProgressBar
+                                            width={(matchedWords / targetText.split(" ").length) * 100}
+                                            style={{
+                                                background: 'linear-gradient(45deg, #00ff88, #00b8ff)',
+                                                transition: 'width 0.3s ease-out'
+                                            }}
+                                        >
+                                            {Math.round((matchedWords / targetText.split(" ").length) * 100)}%
+                                        </MDBProgressBar>
+                                    </MDBProgress>
+                                </motion.div>
+                            </MDBCardBody>
+                        </MDBCard>
+                    </motion.div>
+
+                    {/* Leaderboard Card */}
+                    <motion.div
+                        initial={{ x: 20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                        <MDBCard style={{
+                            width: '300px',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(0, 255, 136, 0.2)',
+                            borderRadius: '20px',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                        }}>
+                            <MDBCardBody>
+                                <h3 style={{
+                                    color: '#00ff88',
+                                    textAlign: 'center',
+                                    marginBottom: '1.5rem'
+                                }}>Leaderboard</h3>
+
+                                {leaderboard.map((player, index) => (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        style={{
+                                            background: 'rgba(255, 255, 255, 0.03)',
+                                            padding: '12px',
+                                            borderRadius: '10px',
+                                            marginBottom: '8px',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            border: '1px solid rgba(0, 255, 136, 0.1)'
+                                        }}
+                                    >
+                                        <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                                            {player.email.split('@')[0].slice(0, 9)}
+                                        </span>
+                                        <span style={{ color: '#00ff88', fontWeight: 'bold' }}>
+                                            {player.initialSpeed} WPM
+                                        </span>
+                                    </motion.div>
+                                ))}
+                            </MDBCardBody>
+                        </MDBCard>
+                    </motion.div>
                 </div>
-            )}
-        </MDBContainer>
+            </MDBContainer>
+
+            {/* Enhanced Result Popup */}
+            <AnimatePresence>
+                {showResult && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'rgba(0, 0, 0, 0.8)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 1000
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.5, opacity: 0 }}
+                            style={{
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                backdropFilter: 'blur(10px)',
+                                padding: '3rem',
+                                borderRadius: '20px',
+                                border: '1px solid rgba(0, 255, 136, 0.2)',
+                                textAlign: 'center'
+                            }}
+                        >
+                            <motion.h2
+                                animate={{ scale: [1, 1.2, 1] }}
+                                transition={{ duration: 0.5 }}
+                                style={{ color: '#00ff88', marginBottom: '1rem' }}
+                            >
+                                {winner}
+                            </motion.h2>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.div>
     );
 }
 

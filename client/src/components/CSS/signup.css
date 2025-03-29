@@ -17,22 +17,17 @@
 
 .star {
   position: absolute;
-  width: 10px;
-  height: 10px;
-  background-color: #fff;
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  animation: twinkle 2s infinite ease-in-out;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle linear infinite;
 }
 
 @keyframes twinkle {
-  0%, 100% {
-      opacity: 0.8;
-      transform: scale(1);
-  }
-  50% {
-      opacity: 0.3;
-      transform: scale(0.8);
-  }
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .bubbles .bubble {
@@ -59,4 +54,28 @@
 form {
   position: relative;
   z-index: 2;
+}
+
+.form-control:focus {
+  border-color: #00ff88;
+  box-shadow: 0 0 0 0.2rem rgba(0, 255, 136, 0.25);
+}
+
+.form-outline input:focus ~ label {
+  color: #00ff88 !important;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+}
+
+/* Add smooth transitions */
+.form-outline {
+  transition: all 0.3s ease;
+}
+
+.form-outline:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 136, 0.1);
 }

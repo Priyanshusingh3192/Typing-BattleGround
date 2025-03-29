@@ -24,8 +24,8 @@ const Welcome2 = () => {
       alignItems: "center",
       justifyContent: "center",
       height: "100vh",
-      background: "linear-gradient(135deg, #4b79a1, #283e51)",
-      color: "white",
+      background: 'linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%)',
+      color: '#00ff88',
       textAlign: "center",
       fontFamily: "Arial, sans-serif",
     },
@@ -33,12 +33,13 @@ const Welcome2 = () => {
       fontSize: "3rem",
       fontWeight: "bold",
       marginBottom: "20px",
-      textShadow: "2px 2px 10px rgba(0, 0, 0, 0.5)",
+      textShadow: "0 0 10px rgba(0, 255, 136, 0.3)",
+      color: '#00ff88',
     },
     description: {
       fontSize: "1.5rem",
       marginBottom: "40px",
-      color: "#e0e0e0",
+      color: "rgba(255, 255, 255, 0.8)",
     },
     buttonsContainer: {
       display: "flex",
@@ -46,21 +47,21 @@ const Welcome2 = () => {
       gap: "15px",
     },
     button: {
-      backgroundColor: "#2196f3",
-      color: "white",
-      padding: "10px 20px",
-      border: "none",
-      borderRadius: "5px",
+      backgroundColor: "rgba(0, 255, 136, 0.1)",
+      color: '#00ff88',
+      padding: "12px 24px",
+      border: "1px solid rgba(0, 255, 136, 0.3)",
+      borderRadius: "10px",
       textDecoration: "none",
       fontSize: "1rem",
       fontWeight: "bold",
       cursor: "pointer",
-      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-      transition: "transform 0.2s, background-color 0.3s",
+      backdropFilter: "blur(10px)",
+      transition: "all 0.3s ease",
     },
     buttonHover: {
+      backgroundColor: "rgba(0, 255, 136, 0.2)",
       transform: "scale(1.05)",
-      backgroundColor: "#1976d2",
     },
   };
 
@@ -79,22 +80,6 @@ const Welcome2 = () => {
       {/* Animated Buttons */}
       <animated.div style={buttonAnimation}>
         <div style={styles.buttonsContainer}>
-          {/* <a
-            href="/login"
-            style={styles.button}
-            onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-            onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
-            Login
-          </a> */}
-          {/* <a
-            href="/signup"
-            style={styles.button}
-            onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-            onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
-            Sign Up
-          </a> */}
           <a
             href="/create-room"
             style={styles.button}

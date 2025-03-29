@@ -14,7 +14,7 @@ function CreateRoom() {
   const handleCreateRoom = () => {
     const code = Math.random().toString(36).substr(2, 6).toUpperCase();
     setRoomCode(code);
-    socket.emit("create-room", { roomCode: code, email: newUser.email,name:newUser.username });
+    socket.emit("create-room", { roomCode: code, email: newUser.email, name: newUser.username });
     navigate(`/room/${code}`);
   };
 
@@ -37,36 +37,79 @@ function CreateRoom() {
   };
 
   return (
-    <div
-    style={{
-      height: "90vh",
-      width: "100vw",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "#000", // Black background
-      overflow: "hidden", // Prevent scrolling
-    }}
-  >
-    <MDBCard
-      style={{
-        width: "400px",
-        backgroundColor: "#574b4b", // Dark grey box
-        color: "white",
-        borderRadius: "12px",
-        boxShadow: "0 4px 10px rgba(17, 224, 48, 0.2)",
-        padding: "20px",
-        textAlign: "center",
-      }}
-    >
-      <MDBCardBody>
-        <MDBTypography tag="h3" className="mb-4">
-          Create or Join Room
-        </MDBTypography>
-        <MDBBtn color="primary" className="mb-3" onClick={handleCreateRoom} >Generate Room Code</MDBBtn>
-      </MDBCardBody>
-    </MDBCard>
-  </div>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%)',
+      padding: '2rem 0',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      <MDBContainer fluid className="px-4">
+        <MDBCard className="text-white mx-auto" style={{
+          maxWidth: '1000px',
+          background: 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '20px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+        }}>
+          <MDBCardBody className="p-5">
+            <div className="row align-items-center">
+              {/* Image Column */}
+              <div className="col-md-6 text-center mb-4 mb-md-0">
+                <img
+                  src="/images/create-room.svg"
+                  alt="Create Room"
+                  className="img-fluid"
+                  style={{
+                    maxWidth: '80%',
+                    filter: 'drop-shadow(0 0 20px rgba(0, 255, 136, 0.15))',
+                    transform: 'scale(0.95)',
+                    transition: 'transform 0.3s ease',
+                  }}
+                  onMouseOver={e => e.currentTarget.style.transform = 'scale(1)'}
+                  onMouseOut={e => e.currentTarget.style.transform = 'scale(0.95)'}
+                />
+              </div>
+
+              {/* Form Column */}
+              <div className="col-md-6 text-center">
+                <h2 className="fw-bold mb-4" style={{
+                  color: '#00ff88',
+                  fontSize: '2.25rem',
+                  letterSpacing: '-0.5px'
+                }}>
+                  Create Room
+                </h2>
+                <p className="text-white-50 mb-4">
+                  Generate a unique room code and invite your friends to join!
+                </p>
+
+                <MDBBtn
+                  onClick={handleCreateRoom}
+                  style={{
+                    background: 'linear-gradient(45deg, #00ff88, #00b8ff)',
+                    padding: '15px 30px',
+                    fontSize: '1.1rem',
+                    fontWeight: '600',
+                    letterSpacing: '0.5px',
+                    border: 'none',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 15px rgba(0, 255, 136, 0.2)',
+                    transition: 'all 0.3s ease'
+                  }}
+                  className="w-100"
+                >
+                  <i className="fas fa-plus-circle me-2"></i>
+                  Generate Room Code
+                </MDBBtn>
+              </div>
+            </div>
+          </MDBCardBody>
+        </MDBCard>
+      </MDBContainer>
+    </div>
   );
 }
 
