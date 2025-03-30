@@ -4,7 +4,17 @@ import { io } from "socket.io-client";
 import { MDBContainer, MDBBtn, MDBTypography, MDBCard, MDBCardBody, MDBInput } from "mdb-react-ui-kit";
 import { User } from "../context/User";
 
-const socket = io("http://localhost:8000");
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+const socket = io(BACKEND_URL, {
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    transports: ['websocket']
+});
+
+socket.on('connect_error', (error) => {
+    console.error('Socket connection error:', error);
+});
 
 function CreateRoom() {
   const [roomCode, setRoomCode] = useState("");

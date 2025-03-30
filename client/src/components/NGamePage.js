@@ -17,7 +17,17 @@ import "./CSS/GamePage.css";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { motion, AnimatePresence } from 'framer-motion';
 
-const socket = io("http://localhost:8000");
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+const socket = io(BACKEND_URL, {
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    transports: ['websocket']
+});
+
+socket.on('connect_error', (error) => {
+    console.error('Socket connection error:', error);
+});
 
 function NGamePage() {
 
